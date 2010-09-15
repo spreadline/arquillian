@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.spi.util.ArquillianHelper;
-import org.jboss.osgi.spi.util.BundleInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
@@ -110,17 +109,7 @@ public class ARQ198TestCase
 
    private String getArquilianVersion() throws BundleException
    {
-      URL artifactURL = ArquillianHelper.getArtifactURL(ARQUILLIAN_OSGI_BUNDLE);
-      assertNotNull("artifactURL not null: " + ARQUILLIAN_OSGI_BUNDLE, artifactURL);
-      
-      BundleInfo info = BundleInfo.createBundleInfo(artifactURL);
-      Version version = info.getVersion();
-      
-      String result = version.getMajor() + "." + version.getMinor() + "." + version.getMicro();
-      String qualifier = version.getQualifier();
-      if (qualifier != null)
-         result += "-" + qualifier;
-      
+      String result = System.getProperty("project.version");
       return result;
    }
 }

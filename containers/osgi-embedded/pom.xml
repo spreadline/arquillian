@@ -73,6 +73,10 @@
               <value>${project.build.directory}</value>
             </property>
             <property>
+              <name>project.version</name>
+              <value>${project.version}</value>
+            </property>
+            <property>
               <name>test.archive.directory</name>
               <value>${project.build.directory}/test-libs</value>
             </property>
