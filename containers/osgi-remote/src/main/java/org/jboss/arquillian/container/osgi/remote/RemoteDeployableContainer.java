@@ -165,6 +165,13 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
    }
 
    @Override
+   public void resolveBundle(BundleHandle handle) throws BundleException, IOException
+   {
+      FrameworkMBean frameworkMBean = jmxSupport.getFrameworkMBean();
+      frameworkMBean.resolveBundle(handle.getBundleId());
+   }
+
+   @Override
    public void uninstallBundle(BundleHandle handle) throws BundleException, IOException
    {
       FrameworkMBean frameworkMBean = jmxSupport.getFrameworkMBean();

@@ -40,7 +40,9 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * The embedded OSGi container.
@@ -137,7 +139,7 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
       return new BundleHandle(bundle.getBundleId(), bundle.getSymbolicName());
    }
 
-   private  Bundle installBundle(BundleContext context, Archive<?> archive) throws BundleException
+   private Bundle installBundle(BundleContext context, Archive<?> archive) throws BundleException
    {
       // Export the bundle bytes
       ZipExporter exporter = archive.as(ZipExporter.class);
@@ -147,13 +149,23 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
       InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
       return context.installBundle(archive.getName(), inputStream);
    }
-   
+
    @Override
    public BundleHandle installBundle(URL bundleURL) throws BundleException, IOException
    {
       BundleContext sysContext = framework.getBundleContext();
       Bundle bundle = sysContext.installBundle(bundleURL.toExternalForm());
       return new BundleHandle(bundle.getBundleId(), bundle.getSymbolicName());
+   }
+
+   @Override
+   public void resolveBundle(BundleHandle handle) throws BundleException, IOException
+   {
+      Bundle bundle = getBundle(handle);
+      BundleContext sysContext = framework.getBundleContext();
+      ServiceReference sref = sysContext.getServiceReference(PackageAdmin.class.getName());
+      PackageAdmin packageAdmin = (PackageAdmin)sysContext.getService(sref);
+      packageAdmin.resolveBundles(new Bundle[] { bundle });
    }
 
    @Override

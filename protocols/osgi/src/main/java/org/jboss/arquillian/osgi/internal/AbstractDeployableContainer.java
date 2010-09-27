@@ -115,6 +115,9 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
          bundleList.add(auxHandle);
       }
 
+      // Resolve the application archive
+      resolveInternal(context, appHandle);
+      
       InternalArchiveProvider archiveProvider = processArchiveProvider(context.get(TestClass.class));
       if (archiveProvider != null)
          context.add(InternalArchiveProvider.class, archiveProvider);
@@ -162,6 +165,23 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
    }
 
+   private void resolveInternal(Context context, BundleHandle handle) throws DeploymentException
+   {
+      try
+      {
+         log.debug("Resolve bundle: " + handle.getSymbolicName());
+         resolveBundle(handle);
+      }
+      catch (RuntimeException rte)
+      {
+         throw rte;
+      }
+      catch (Exception ex)
+      {
+         throw new DeploymentException("Cannot resolve bundle: " + handle, ex);
+      }
+   }
+
    private void uninstallInternal(BundleHandle handle)
    {
       try
@@ -185,6 +205,8 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
 
    public abstract BundleHandle installBundle(URL bundleURL) throws BundleException, IOException;
 
+   public abstract void resolveBundle(BundleHandle handle) throws BundleException, IOException;
+   
    public abstract void uninstallBundle(BundleHandle handle) throws BundleException, IOException;
 
    public abstract int getBundleState(BundleHandle handle);
