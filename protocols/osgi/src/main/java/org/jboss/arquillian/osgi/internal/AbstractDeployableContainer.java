@@ -67,15 +67,9 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
 
    protected void installSupportBundles()
    {
-      // Install the compendium and the arquillian bundle on demand
+      // Install the arquillian bundle on demand
       try
       {
-         if (isBundleInstalled("osgi.cmpn") == false)
-         {
-            BundleHandle handle = installSupportBundle("org.osgi.compendium", false);
-            supportBundles.add(handle);
-         }
-
          if (isBundleInstalled("arquillian-osgi-bundle") == false)
          {
             BundleHandle handle = installSupportBundle("arquillian-osgi-bundle", true);
