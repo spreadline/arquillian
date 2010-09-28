@@ -17,6 +17,7 @@
 package org.jboss.arquillian.container.osgi.arq198;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -66,8 +67,17 @@ public class ARQ198TestCase
    @Test
    public void testArtifactFromRepository() throws Exception
    {
-      String artifactId = "arquillian-protocol-local";
-      URL artifactURL = ArquillianHelper.getArtifactURL("org.jboss.arquillian.protocol", artifactId, getArquilianVersion());
+      // This must be some artifact that surely gets pulled in the local repo by
+      // 'mvn -pl containers/osgi-embedded/ -am clean install' but is not part of the test classpath
+      // Mockito is currently used by arquillian-protocol-osgi, but not arquillian-osgi-embedded.
+      String groupId = "org.mockito";
+      String artifactId = "mockito-all";
+      String version = "1.8.3";
+      
+      String classPath = System.getProperty("java.class.path");
+      assertFalse("java.class.path does not contain " + artifactId, classPath.contains(artifactId));
+      
+      URL artifactURL = ArquillianHelper.getArtifactURL(groupId, artifactId, version);
       assertNotNull("artifactURL not null: " + artifactId, artifactURL);
    }
    
