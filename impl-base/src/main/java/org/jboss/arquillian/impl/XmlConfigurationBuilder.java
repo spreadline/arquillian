@@ -130,6 +130,9 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       {
          // load the xml configuration file
          ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+         if (classLoader == null)
+            classLoader = getClass().getClassLoader();
+         
          inputStream = classLoader.getResourceAsStream(resourcePath);
          
          if (inputStream != null) 

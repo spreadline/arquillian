@@ -16,12 +16,10 @@
  */
 package org.jboss.arquillian.osgi.internal;
 
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_JMX_HOST;
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_JMX_RMI_PORT;
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_JMX_RMI_REGISTRY_PORT;
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_JMX_HOST;
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_JMX_RMI_PORT;
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_JMX_RMI_REGISTRY_PORT;
+import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_PORT;
+import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_PORT;
+import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_HOST;
+import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_HOST;
 
 import java.io.IOException;
 
@@ -45,7 +43,7 @@ public class RemoteOSGiContainer extends AbstractOSGiContainer
 {
    // Provide logging
    private static final Logger log = Logger.getLogger(RemoteOSGiContainer.class);
-   
+
    private JMXConnector jmxConnector;
 
    public RemoteOSGiContainer(BundleContext context, TestClass testClass)
@@ -56,33 +54,33 @@ public class RemoteOSGiContainer extends AbstractOSGiContainer
    @Override
    public MBeanServerConnection getMBeanServerConnection()
    {
-      String jmxHost = getFrameworkProperty(REMOTE_JMX_HOST, DEFAULT_REMOTE_JMX_HOST);
-      Integer jmxPort = Integer.parseInt(getFrameworkProperty(REMOTE_JMX_RMI_PORT, DEFAULT_REMOTE_JMX_RMI_PORT));
-      Integer rmiPort = Integer.parseInt(getFrameworkProperty(REMOTE_JMX_RMI_REGISTRY_PORT, DEFAULT_REMOTE_JMX_RMI_REGISTRY_PORT));
-      
-      JMXServiceURL serviceURL = JMXServiceURLFactory.getServiceURL(jmxHost, jmxPort + 1, rmiPort, "arquillian-osgi-callback");
+      String rmiHost = getFrameworkProperty(REMOTE_RMI_HOST, DEFAULT_REMOTE_RMI_HOST);
+      Integer rmiPort = Integer.parseInt(getFrameworkProperty(REMOTE_RMI_PORT, DEFAULT_REMOTE_RMI_PORT)) + 100;
+
+      String urlString = "service:jmx:rmi://" + rmiHost + ":" + (rmiPort + 1) + "/jndi/rmi://" + rmiHost + ":" + rmiPort + "/arquillian-osgi-callback";
       try
       {
          if (jmxConnector == null)
          {
-            log.debug("Connecting JMXConnector to: " + serviceURL);
+            log.debug("Connecting JMXConnector to: " + urlString);
+            JMXServiceURL serviceURL = new JMXServiceURL(urlString);
             jmxConnector = JMXConnectorFactory.connect(serviceURL, null);
          }
-         
+
          return jmxConnector.getMBeanServerConnection();
       }
       catch (IOException ex)
       {
-         throw new IllegalStateException("Cannot obtain MBeanServerConnection to: " + serviceURL, ex);
+         throw new IllegalStateException("Cannot obtain MBeanServerConnection to: " + urlString, ex);
       }
    }
-   
+
    private String getFrameworkProperty(String key, String defaultValue)
    {
       String value = getBundleContext().getProperty(key);
       if (value == null)
          value = defaultValue;
-      
+
       return value;
    }
 }

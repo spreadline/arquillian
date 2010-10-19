@@ -16,12 +16,10 @@
  */
 package org.jboss.arquillian.container.osgi.remote;
 
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_JMX_HOST;
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_JMX_RMI_PORT;
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_JMX_RMI_REGISTRY_PORT;
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_JMX_HOST;
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_JMX_RMI_PORT;
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_JMX_RMI_REGISTRY_PORT;
+import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_HOST;
+import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_PORT;
+import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_HOST;
+import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_PORT;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,7 +35,6 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
-import org.jboss.arquillian.osgi.internal.JMXServiceURLFactory;
 import org.jboss.arquillian.protocol.jmx.JMXConnectorServerExt;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
@@ -151,7 +148,7 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
    @Override
    public BundleHandle installBundle(URL bundleURL) throws BundleException, IOException
    {
-      VirtualFile virtualFile = AbstractVFS.getRoot(bundleURL);
+      VirtualFile virtualFile = AbstractVFS.toVirtualFile(bundleURL);
       return installBundle(virtualFile);
    }
 
@@ -268,15 +265,13 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
    // Get the MBeanServerConnection through the JMXConnector
    private MBeanServerConnection getMBeanServerConnection()
    {
-      String jmxHost = System.getProperty(REMOTE_JMX_HOST, System.getProperty("jboss.bind.address", DEFAULT_REMOTE_JMX_HOST));
-      int jmxPort = Integer.parseInt(System.getProperty(REMOTE_JMX_RMI_PORT, DEFAULT_REMOTE_JMX_RMI_PORT));
-      int rmiPort = Integer.parseInt(System.getProperty(REMOTE_JMX_RMI_REGISTRY_PORT, DEFAULT_REMOTE_JMX_RMI_REGISTRY_PORT));
-      JMXServiceURL serviceURL = JMXServiceURLFactory.getServiceURL(jmxHost, jmxPort, rmiPort, "osgi-jmx-connector");
+      String urlString = System.getProperty("jmx.service.url", "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxrmi");
       try
       {
          if (jmxConnector == null)
          {
-            log.debug("Connecting JMXConnector to: " + serviceURL);
+            log.debug("Connecting JMXConnector to: " + urlString);
+            JMXServiceURL serviceURL = new JMXServiceURL(urlString);
             jmxConnector = JMXConnectorFactory.connect(serviceURL, null);
          }
 
@@ -284,27 +279,27 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       }
       catch (IOException ex)
       {
-         throw new IllegalStateException("Cannot obtain MBeanServerConnection to: " + serviceURL, ex);
+         throw new IllegalStateException("Cannot obtain MBeanServerConnection to: " + urlString, ex);
       }
    }
 
    private JMXConnectorServerExt createJMXConnectorServer()
    {
       // Start the JSR160 connector
-      String jmxHost = System.getProperty(REMOTE_JMX_HOST, System.getProperty("jboss.bind.address", DEFAULT_REMOTE_JMX_HOST));
-      int jmxPort = Integer.parseInt(System.getProperty(REMOTE_JMX_RMI_PORT, DEFAULT_REMOTE_JMX_RMI_PORT));
-      int rmiPort = Integer.parseInt(System.getProperty(REMOTE_JMX_RMI_REGISTRY_PORT, DEFAULT_REMOTE_JMX_RMI_REGISTRY_PORT));
-      JMXServiceURL serviceURL = JMXServiceURLFactory.getServiceURL(jmxHost, jmxPort + 1, rmiPort, "arquillian-osgi-callback");
+      String rmiHost = System.getProperty(REMOTE_RMI_HOST, System.getProperty("jboss.bind.address", DEFAULT_REMOTE_RMI_HOST));
+      int rmiPort = Integer.parseInt(System.getProperty(REMOTE_RMI_PORT, DEFAULT_REMOTE_RMI_PORT)) + 100;
+      String urlString = "service:jmx:rmi://" + rmiHost + ":" + (rmiPort + 1) + "/jndi/rmi://" + rmiHost + ":" + rmiPort + "/arquillian-osgi-callback";
       try
       {
-         log.debug("Starting JMXConnectorServer on: " + serviceURL);
+         log.debug("Starting JMXConnectorServer on: " + urlString);
+         JMXServiceURL serviceURL = new JMXServiceURL(urlString);
          JMXConnectorServerExt connectorServer = new JMXConnectorServerExt(serviceURL, rmiPort);
          connectorServer.start(JMXServerFactory.findOrCreateMBeanServer());
          return connectorServer;
       }
       catch (IOException ex)
       {
-         log.error("Cannot start JMXConnectorServer on: " + serviceURL, ex);
+         log.error("Cannot start JMXConnectorServer on: " + urlString, ex);
          return null;
       }
    }
