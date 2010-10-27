@@ -35,9 +35,11 @@
       <artifactId>arquillian-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-spi</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
