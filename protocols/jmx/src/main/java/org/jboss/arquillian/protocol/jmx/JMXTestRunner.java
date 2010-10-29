@@ -44,6 +44,8 @@ public class JMXTestRunner implements JMXTestRunnerMBean
    private static Logger log = Logger.getLogger(JMXTestRunner.class);
 
    private static ThreadLocal<ExecutionType> executionTypeAssociation = new ThreadLocal<ExecutionType>();
+   private static ThreadLocal<MBeanServer> mbeanServerAssociation = new ThreadLocal<MBeanServer>();
+   private final MBeanServer mbeanServer;
    private TestClassLoader testClassLoader;
    
    public interface TestClassLoader
@@ -51,8 +53,9 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       Class<?> loadTestClass(String className) throws ClassNotFoundException;
    }
 
-   public JMXTestRunner(TestClassLoader classLoader)
+   public JMXTestRunner(MBeanServer mbeanServer, TestClassLoader classLoader)
    {
+      this.mbeanServer = mbeanServer;
       this.testClassLoader = classLoader;
       
       // Initialize the default TestClassLoader
@@ -74,7 +77,12 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       return executionTypeAssociation.get();
    }
 
-   public ObjectName registerMBean(MBeanServer mbeanServer) throws JMException
+   public static MBeanServer getThreadContextMBeanServer()
+   {
+      return mbeanServerAssociation.get();
+   }
+
+   public ObjectName registerMBean() throws JMException
    {
       ObjectName oname = new ObjectName(JMXTestRunnerMBean.OBJECT_NAME);
       mbeanServer.registerMBean(this, oname);
@@ -82,7 +90,7 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       return oname;
    }
 
-   public void unregisterMBean(MBeanServer mbeanServer) throws JMException
+   public void unregisterMBean() throws JMException
    {
       ObjectName oname = new ObjectName(JMXTestRunnerMBean.OBJECT_NAME);
       if (mbeanServer.isRegistered(oname))
@@ -129,6 +137,11 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       
       try
       {
+         // This hack associates the MBeanServer that this runner is registered with
+         // with the current Thread so that other components (e.g. OSGiTestEnricher)
+         // are gurantied to use the same MBeanServer. This issue showed up in AS7.
+         mbeanServerAssociation.set(mbeanServer);
+         
          TestRunner runner = TestRunners.getTestRunner(JMXTestRunner.class.getClassLoader());
          Class<?> testClass = testClassLoader.loadTestClass(className);
          
@@ -138,6 +151,10 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       catch (Throwable th)
       {
          return new TestResult(Status.FAILED, th);
+      }
+      finally
+      {
+         mbeanServerAssociation.remove();
       }
    }
 }

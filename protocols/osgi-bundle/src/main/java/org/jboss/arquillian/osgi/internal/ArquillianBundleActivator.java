@@ -65,8 +65,8 @@ public class ArquillianBundleActivator implements BundleActivator
       
       // Register the JMXTestRunner
       MBeanServer mbeanServer = getMBeanServer(context);
-      testRunner = new JMXTestRunner(loader);
-      testRunner.registerMBean(mbeanServer);
+      testRunner = new JMXTestRunner(mbeanServer, loader);
+      testRunner.registerMBean();
 
       // Register the BundleContextHolder
       BundleContextHolder holder = new BundleContextHolder()
@@ -83,10 +83,10 @@ public class ArquillianBundleActivator implements BundleActivator
    public void stop(BundleContext context) throws Exception
    {
       // Unregister the JMXTestRunner
-      MBeanServer mbeanServer = getMBeanServer(context);
-      testRunner.unregisterMBean(mbeanServer);
+      testRunner.unregisterMBean();
 
       // Unregister the BundleContextHolder
+      MBeanServer mbeanServer = getMBeanServer(context);
       mbeanServer.unregisterMBean(new ObjectName(BundleContextHolder.OBJECT_NAME));
    }
 

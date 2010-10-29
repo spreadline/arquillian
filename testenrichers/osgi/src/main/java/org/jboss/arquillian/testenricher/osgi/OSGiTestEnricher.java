@@ -29,7 +29,6 @@ import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.osgi.internal.EmbeddedOSGiContainer;
 import org.jboss.arquillian.osgi.internal.RemoteOSGiContainer;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
-import org.jboss.arquillian.protocol.jmx.JMXServerFactory;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.TestClass;
@@ -160,7 +159,7 @@ public class OSGiTestEnricher implements TestEnricher
    {
       try
       {
-         MBeanServer mbeanServer = JMXServerFactory.findOrCreateMBeanServer();
+         MBeanServer mbeanServer = JMXTestRunner.getThreadContextMBeanServer();
          ObjectName oname = new ObjectName(BundleContextHolder.OBJECT_NAME);
          if (mbeanServer.isRegistered(oname) == false)
             throw new IllegalStateException("BundleContextHolder not registered");

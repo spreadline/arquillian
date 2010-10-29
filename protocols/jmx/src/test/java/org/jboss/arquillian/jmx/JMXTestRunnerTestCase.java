@@ -44,8 +44,8 @@ public class JMXTestRunnerTestCase
    public void testJMXTestRunner() throws Throwable
    {
       MBeanServer mbeanServer = getMBeanServer();
-      JMXTestRunner jmxTestRunner = new JMXTestRunner(null);
-      ObjectName oname = jmxTestRunner.registerMBean(mbeanServer);
+      JMXTestRunner jmxTestRunner = new JMXTestRunner(mbeanServer, null);
+      ObjectName oname = jmxTestRunner.registerMBean();
       
       try
       {
