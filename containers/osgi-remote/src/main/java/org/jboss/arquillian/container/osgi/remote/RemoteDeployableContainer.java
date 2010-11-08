@@ -288,12 +288,12 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       // Start the JSR160 connector
       String rmiHost = System.getProperty(REMOTE_RMI_HOST, System.getProperty("jboss.bind.address", DEFAULT_REMOTE_RMI_HOST));
       int rmiPort = Integer.parseInt(System.getProperty(REMOTE_RMI_PORT, DEFAULT_REMOTE_RMI_PORT)) + 100;
-      String urlString = "service:jmx:rmi://" + rmiHost + ":" + (rmiPort + 1) + "/jndi/rmi://" + rmiHost + ":" + rmiPort + "/arquillian-osgi-callback";
+      String urlString = "service:jmx:rmi://" + rmiHost + ":" + rmiPort + "/jmxrmi";
       try
       {
          log.debug("Starting JMXConnectorServer on: " + urlString);
          JMXServiceURL serviceURL = new JMXServiceURL(urlString);
-         JMXConnectorServerExt connectorServer = new JMXConnectorServerExt(serviceURL, rmiPort);
+         JMXConnectorServerExt connectorServer = new JMXConnectorServerExt(serviceURL, 1099);
          connectorServer.start(JMXServerFactory.findOrCreateMBeanServer());
          return connectorServer;
       }

@@ -25,12 +25,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 
 import javax.management.MBeanServer;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.management.remote.rmi.RMIConnectorServer;
+import javax.management.remote.rmi.RMIJRMPServerImpl;
+import javax.management.remote.rmi.RMIServerImpl;
 
 import org.jboss.logging.Logger;
 
@@ -46,7 +48,7 @@ public class JMXConnectorServerExt
    private static final Logger log = Logger.getLogger(JMXConnectorServerExt.class);
 
    private JMXServiceURL serviceURL;
-   private JMXConnectorServer jmxConnectorServer;
+   private RMIConnectorServer connectorServer;
    private boolean shutdownRegistry;
    private Registry rmiRegistry;
 
@@ -73,11 +75,17 @@ public class JMXConnectorServerExt
 
    public void start(MBeanServer mbeanServer) throws IOException
    {
+      String rmiHost = serviceURL.getHost();
+      int rmiPort = serviceURL.getPort();
+      
       // create new connector server and start it
-      jmxConnectorServer = JMXConnectorServerFactory.newJMXConnectorServer(serviceURL, null, mbeanServer);
+      RMIServerSocketFactory serverSocketFactory = new DefaultSocketFactory(InetAddress.getByName(rmiHost));
+      RMIServerImpl rmiServer = new RMIJRMPServerImpl(rmiPort, null, serverSocketFactory, null);
+      connectorServer = new RMIConnectorServer(serviceURL, null, rmiServer, mbeanServer);
       log.debug("JMXConnectorServer created: " + serviceURL);
 
-      jmxConnectorServer.start();
+      connectorServer.start();
+      rmiRegistry.rebind("jmxrmi", rmiServer.toStub());
       log.debug("JMXConnectorServer started: " + serviceURL);
    }
 
@@ -85,7 +93,11 @@ public class JMXConnectorServerExt
    {
       try
       {
-         jmxConnectorServer.stop();
+         if (connectorServer != null)
+         {
+            connectorServer.stop();
+            rmiRegistry.unbind("jmxrmi");
+         }
 
          // Shutdown the registry if this service created it
          if (shutdownRegistry == true)
@@ -96,7 +108,7 @@ public class JMXConnectorServerExt
 
          log.debug("JMXConnectorServer stopped");
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
          log.warn("Cannot stop JMXConnectorServer", ex);
       }

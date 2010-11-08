@@ -16,17 +16,20 @@
  */
 package org.jboss.arquillian.osgi.internal;
 
-import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_PORT;
+import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_HOST;
 import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_PORT;
 import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_HOST;
-import static org.jboss.osgi.jmx.JMXConstantsExt.DEFAULT_REMOTE_RMI_HOST;
+import static org.jboss.osgi.jmx.JMXConstantsExt.REMOTE_RMI_PORT;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.naming.Context;
 
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.spi.TestClass;
@@ -56,22 +59,21 @@ public class RemoteOSGiContainer extends AbstractOSGiContainer
    {
       String rmiHost = getFrameworkProperty(REMOTE_RMI_HOST, DEFAULT_REMOTE_RMI_HOST);
       Integer rmiPort = Integer.parseInt(getFrameworkProperty(REMOTE_RMI_PORT, DEFAULT_REMOTE_RMI_PORT)) + 100;
-
-      String urlString = "service:jmx:rmi://" + rmiHost + ":" + (rmiPort + 1) + "/jndi/rmi://" + rmiHost + ":" + rmiPort + "/arquillian-osgi-callback";
+      String urlString = System.getProperty("arq.callback.url", "service:jmx:rmi:///jndi/rmi://" + rmiHost + ":" + rmiPort + "/jmxrmi");
+      log.debug("Connecting JMXConnector to: " + urlString);
+      
+      Map<String, Object> env = new HashMap<String, Object>();
+      env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory");
       try
       {
-         if (jmxConnector == null)
-         {
-            log.debug("Connecting JMXConnector to: " + urlString);
-            JMXServiceURL serviceURL = new JMXServiceURL(urlString);
-            jmxConnector = JMXConnectorFactory.connect(serviceURL, null);
-         }
-
+         // Get the MBeanServerConnection through the JMXConnector
+         JMXServiceURL serviceURL = new JMXServiceURL(urlString);
+         jmxConnector = JMXConnectorFactory.connect(serviceURL, env);
          return jmxConnector.getMBeanServerConnection();
       }
       catch (IOException ex)
       {
-         throw new IllegalStateException("Cannot obtain MBeanServerConnection to: " + urlString, ex);
+         throw new IllegalStateException("Cannot obtain MBeanServerConnection", ex);
       }
    }
 

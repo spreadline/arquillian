@@ -35,6 +35,7 @@
             <Bundle-Activator>org.jboss.arquillian.osgi.internal.ArquillianBundleActivator</Bundle-Activator>
             <Export-Package></Export-Package>
             <Import-Package>
+              com.sun.jndi.rmi.registry;resolution:=optional,
               javax.management*,
               javax.naming,
               javax.xml.parsers,
