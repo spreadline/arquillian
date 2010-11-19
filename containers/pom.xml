@@ -32,6 +32,8 @@
     <!-- Disabled until tests are fixed -->
     <!-- module>jbossas-embedded-6</module -->
     <!-- module>reloaded-embedded-1</module -->
+    <module>jbossas-embedded-7</module>
+    <module>jbossas-remote-7</module>
     <module>jsr88-remote-1.2</module>
     <module>glassfish-remote-3</module>
     <module>glassfish-embedded-3</module>

@@ -25,6 +25,7 @@
 
   <!--  Modules -->
   <modules>
+    <module>domain</module>
     <module>jmx</module>
     <module>local</module>
     <module>osgi</module>
