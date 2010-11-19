@@ -9,7 +9,7 @@
    <parent>
       <groupId>org.jboss.arquillian.extension</groupId>
       <artifactId>arquillian-extension-parent</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0.AS7-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
