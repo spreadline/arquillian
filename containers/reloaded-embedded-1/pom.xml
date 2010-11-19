@@ -103,7 +103,7 @@
     <dependencies>
       <dependency>
         <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-spi</artifactId>
+        <artifactId>jboss-logging</artifactId>
         <version>${version.org.jboss.logging}</version>
       </dependency>
     </dependencies>
