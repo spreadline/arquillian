@@ -28,16 +28,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestRunner;
 import org.jboss.arquillian.spi.TestResult.Status;
+import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.arquillian.spi.util.TestRunners;
 
 /**
  * ServletTestRunner
- * 
+ *
  * The server side executor for the Servlet protocol impl.
- * 
+ *
  * Supports multiple output modes ("outputmode"):
  *  - html
- *  - serializedObject 
+ *  - serializedObject
  *
  * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
  * @version $Revision: $
@@ -49,15 +50,15 @@ public class ServletTestRunner extends HttpServlet
    public static final String PARA_METHOD_NAME = "methodName";
    public static final String PARA_CLASS_NAME = "className";
    public static final String PARA_OUTPUT_MODE = "outputMode";
-   
+
    public static final String OUTPUT_MODE_SERIALIZED = "serializedObject";
    public static final String OUTPUT_MODE_HTML = "html";
-   
+
    @Override
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
       String outputMode = OUTPUT_MODE_HTML;
-      try 
+      try
       {
          String className = null;
          String methodName = null;
@@ -76,18 +77,18 @@ public class ServletTestRunner extends HttpServlet
          {
             throw new IllegalArgumentException(PARA_METHOD_NAME + " must be specified");
          }
-         
-         Class<?> testClass = SecurityActions.getThreadContextClassLoader().loadClass(className);
-         
+
+         Class<?> testClass = TCCLActions.getClassLoader().loadClass(className);
+
          TestRunner runner = TestRunners.getTestRunner();
-         
+
          TestResult testResult = runner.execute(testClass, methodName);
 
-         if(OUTPUT_MODE_SERIALIZED.equalsIgnoreCase(outputMode)) 
+         if(OUTPUT_MODE_SERIALIZED.equalsIgnoreCase(outputMode))
          {
             writeObject(testResult, response);
-         } 
-         else 
+         }
+         else
          {
             // TODO: implement a html view of the result
             response.setContentType("text/html");
@@ -101,7 +102,7 @@ public class ServletTestRunner extends HttpServlet
             writer.write("<tr>\n");
             writer.write("<td><b>Method</b></td><td><b>Status</b></td>\n");
             writer.write("</tr>\n");
-            
+
             writer.write("</table>\n");
             writer.write("<h2>Tests</h2>\n");
             writer.write("<table>\n");
@@ -113,43 +114,43 @@ public class ServletTestRunner extends HttpServlet
             writer.write("</body>\n");
          }
 
-      } 
-      catch(Exception e) 
+      }
+      catch(Exception e)
       {
-         if(OUTPUT_MODE_SERIALIZED.equalsIgnoreCase(outputMode)) 
+         if(OUTPUT_MODE_SERIALIZED.equalsIgnoreCase(outputMode))
          {
             writeObject(createFailedResult(e), response);
-         } 
-         else 
+         }
+         else
          {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());  
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
          }
       }
    }
-   
-   private void writeObject(Object object, HttpServletResponse response) 
+
+   private void writeObject(Object object, HttpServletResponse response)
    {
-      try 
+      try
       {
          ObjectOutputStream oos = new ObjectOutputStream(response.getOutputStream());
          oos.writeObject(object);
          response.setStatus(HttpServletResponse.SC_OK);
          oos.flush();
          oos.close();
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
-         try 
+         try
          {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-         } 
-         catch (Exception e2) 
+         }
+         catch (Exception e2)
          {
             throw new RuntimeException("Could not write to output", e2);
          }
       }
    }
-   
+
    private TestResult createFailedResult(Throwable throwable)
    {
       return new TestResult(Status.FAILED, throwable);

@@ -24,9 +24,9 @@ import java.security.PrivilegedExceptionAction;
 
 /**
  * SecurityActions
- * 
+ *
  * A set of privileged actions that are not to leak out
- * of this package 
+ * of this package
  *
  * @author <a href="mailto:andrew.rubinger@jboss.org">ALR</a>
  * @version $Revision: $
@@ -104,9 +104,9 @@ final class SecurityActions
    }
 
    /**
-    * Create a new instance by finding a constructor that matches the argumentTypes signature 
+    * Create a new instance by finding a constructor that matches the argumentTypes signature
     * using the arguments for instantiation.
-    * 
+    *
     * @param className Full classname of class to create
     * @param argumentTypes The constructor argument types
     * @param arguments The constructor arguments

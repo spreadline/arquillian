@@ -21,18 +21,17 @@ import org.jboss.shrinkwrap.api.Archive;
 /**
  * Extension point for the Protocol to prepare the Archives for deployment.
  *
- * Example:
- * - Create a EAR, WAR
+ * Example: - Create a EAR, WAR
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
- * @version $Revision: $
+ * @version Thomas.Diesler@jboss.com
  */
 public interface DeploymentPackager
 {
    /**
     * @param context The arquillian test context
- * @param testDeployment Value object containing the application {@link Archive} and other auxiliary library {@link Archive}s.
- * @return The prepared archive for deployment.
+    * @param testDeployment Value object containing the application {@link Archive} and other auxiliary library {@link Archive}s.
+    * @return The prepared archive for deployment.
     */
    Archive<?> generateDeployment(Context context, TestDeployment testDeployment);
 }

@@ -31,6 +31,7 @@ import org.jboss.arquillian.spi.ConfigurationException;
 import org.jboss.arquillian.spi.ContainerConfiguration;
 import org.jboss.arquillian.spi.ExtensionConfiguration;
 import org.jboss.arquillian.spi.ServiceLoader;
+import org.jboss.arquillian.spi.util.TCCLActions;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -49,9 +50,9 @@ import org.w3c.dom.NodeList;
  */
 public class XmlConfigurationBuilder implements ConfigurationBuilder
 {
-   
+
    private static final Logger log = Logger.getLogger(XmlConfigurationBuilder.class.getName());
-   
+
    /**
     * The default XML resource path.
     */
@@ -61,13 +62,13 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
     * The actual resourcePath
     */
    private String resourcePath;
-   
+
    private ServiceLoader serviceLoader;
 
    /**
     * Constructor. Initializes with the default resource path and service loader.
     */
-   public XmlConfigurationBuilder() 
+   public XmlConfigurationBuilder()
    {
        this(DEFAULT_RESOURCE_PATH);
    }
@@ -77,17 +78,17 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
     * service loader.
     * @param resourcePath the path to the XML configuration file.
     */
-   public XmlConfigurationBuilder(String resourcePath) 
+   public XmlConfigurationBuilder(String resourcePath)
    {
        this(resourcePath, new DynamicServiceLoader());
    }
-   
+
    /**
     * Constructor. Initializes with the provided resource path and service loader.
     * @param resourcePath the path to the XML configuration file.
     * @param serviceLoader the ServiceLoader implementation to use.
     */
-   public XmlConfigurationBuilder(String resourcePath, ServiceLoader serviceLoader) 
+   public XmlConfigurationBuilder(String resourcePath, ServiceLoader serviceLoader)
    {
       this.resourcePath = resourcePath;
       this.serviceLoader = serviceLoader;
@@ -97,18 +98,18 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
     * @see org.jboss.arquillian.impl.ConfigurationBuilder#build()
     */
    public Configuration build() throws ConfigurationException
-   {      
+   {
       // the configuration object we are going to return
       Configuration configuration = new Configuration();
-      
+
       Collection<ContainerConfiguration> containersConfigurations = serviceLoader.all(ContainerConfiguration.class);
       log.fine("Container Configurations: " + containersConfigurations.size());
-      
+
       for(ContainerConfiguration containerConfiguration : containersConfigurations)
       {
          configuration.addContainerConfig(containerConfiguration);
       }
-      
+
       Collection<ExtensionConfiguration> extensionsConfigurations = serviceLoader.all(ExtensionConfiguration.class);
       log.fine("Extension Configurations: " + containersConfigurations.size());
 
@@ -116,18 +117,18 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       {
          configuration.addExtensionConfig(extensionConfiguration);
       }
-      
+
       try
       {
          Document arquillianConfiguration = loadArquillianConfiguration(resourcePath);
          if(arquillianConfiguration != null)
          {
             populateConfiguration(arquillianConfiguration, containersConfigurations, "container");
-            populateConfiguration(arquillianConfiguration, extensionsConfigurations, "extension");            
+            populateConfiguration(arquillianConfiguration, extensionsConfigurations, "extension");
             populateConfiguration(arquillianConfiguration, configuration);
          }
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new ConfigurationException("Could not create configuration", e);
       }
@@ -140,20 +141,20 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       try
       {
          // load the xml configuration file
-         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+         ClassLoader classLoader = TCCLActions.getClassLoader();
          inputStream = classLoader.getResourceAsStream(resourcePath);
-         
-         if (inputStream != null) 
+
+         if (inputStream != null)
          {
             log.info("building configuration from XML file: " + resourcePath);
             return getDocument(inputStream);
          }
-         else 
+         else
          {
             log.fine("No " + resourcePath + " file found");
          }
-      } 
-      finally 
+      }
+      finally
       {
          if(inputStream != null)
          {
@@ -177,38 +178,38 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
    {
       // load all the container nodes
       NodeList nodeList = xmlDocument.getDocumentElement().getElementsByTagNameNS("*", localName);
-      for (int i=0; i < nodeList.getLength(); i++) 
+      for (int i=0; i < nodeList.getLength(); i++)
       {
-         Node subConfigNode = nodeList.item(i); 
-         
+         Node subConfigNode = nodeList.item(i);
+
          // retrieve the package
          String pkg = subConfigNode.getNamespaceURI().replaceFirst("urn:arq:", "");
-         
+
          // try to find a ContainerConfiguration that matches the package
          T subConfiguration = matchSubConfiguration(subConfigurations, pkg);
-         
-         if (subConfiguration != null) 
+
+         if (subConfiguration != null)
          {
             // map the nodes
             mapNodesToProperties(subConfiguration, subConfigNode);
          }
       }
    }
-   
+
    private void populateConfiguration(Document xmlDocument, Configuration configuration) throws Exception
    {
       // try to map all child nodes
       NodeList nodeList = xmlDocument.getDocumentElement().getElementsByTagNameNS("*", "engine");
-      for (int i=0; i < nodeList.getLength(); i++) 
+      for (int i=0; i < nodeList.getLength(); i++)
       {
-         Node node = nodeList.item(i); 
+         Node node = nodeList.item(i);
          mapNodesToProperties(configuration, node);
       }
    }
 
    /**
-    * Fills the properties of the Configuration implementation object with the 
-    * information from the XML fragment. 
+    * Fills the properties of the Configuration implementation object with the
+    * information from the XML fragment.
     * @param configurationObject the object to be filled from the XML fragment
     * @param xmlNode the XML node that represents the configuration.
     * @throws Exception if there is a problem filling the object.
@@ -218,19 +219,19 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       // validation
       Validate.notNull(configurationObject, "No ConfigurationObject specified");
       Validate.notNull(xmlNode, "No XML Node specified");
-      
+
       log.fine("filling container configuration for class: " + configurationObject.getClass().getName());
-      
+
       // here we will store the properties taken from the child elements of the node
-      Map<String,String> properties = new HashMap<String,String>(); 
-      
+      Map<String,String> properties = new HashMap<String,String>();
+
       NodeList childNodes = xmlNode.getChildNodes();
-      for (int i=0; i < childNodes.getLength(); i++) 
+      for (int i=0; i < childNodes.getLength(); i++)
       {
          Node child = childNodes.item(i);
-         
+
          // only process element nodes
-         if (child.getNodeType() == Node.ELEMENT_NODE) 
+         if (child.getNodeType() == Node.ELEMENT_NODE)
          {
             properties.putAll(getPropertiesFromNode(child));
          }
@@ -250,7 +251,7 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       }
 
       // set the properties found in the container XML fragment to the Configuration Object
-      for (Map.Entry<String, String> property : properties.entrySet()) 
+      for (Map.Entry<String, String> property : properties.entrySet())
       {
          if (setters.containsKey(property.getKey()))
          {
@@ -260,7 +261,7 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
          }
       }
    }
-   
+
    /**
     * Creates all the properties from a single Node element. The element must be a child of the
     * 'section' root element.
@@ -268,13 +269,13 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
     * @return a Map of properties names and values mapped from the XML Node element.
     */
    private Map<String,String> getPropertiesFromNode(Node element) {
-      Map<String,String> properties = new HashMap<String,String>(); 
+      Map<String,String> properties = new HashMap<String,String>();
 
-      // retrieve the attributes of the element 
+      // retrieve the attributes of the element
       NamedNodeMap attributes = element.getAttributes();
-      
+
       // choose the strategy
-      if (attributes.getLength() > 0) 
+      if (attributes.getLength() > 0)
       {
          new TagNameAttributeMapper().map(element, properties);
       }
@@ -282,79 +283,79 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       {
          new TagNameMapper().map(element, properties);
       }
-      
+
       return properties;
    }
-   
+
    /**
     * Matches a Configuration implementation object with the pkg parameter.
     * @param subConfigurations The collection of configuration to be searched for
     * @param pkg the package prefix used to match the configuration.
-    * @return the configuration implementation object that matches the package, 
+    * @return the configuration implementation object that matches the package,
     * @{code null} otherwise.
     */
-   private <T> T matchSubConfiguration(Collection<T> subConfigurations, String pkg) 
+   private <T> T matchSubConfiguration(Collection<T> subConfigurations, String pkg)
    {
       log.fine("trying to match a configuration for package: " + pkg);
-      
-      
-      T subConfiguration = null;      
+
+
+      T subConfiguration = null;
       // select the configuration that matches the package
-      for (T sc : subConfigurations) 
+      for (T sc : subConfigurations)
       {
-         if (sc.getClass().getName().startsWith(pkg)) 
+         if (sc.getClass().getName().startsWith(pkg))
          {
-            subConfiguration = sc;                  
+            subConfiguration = sc;
          }
       }
-      
+
       // warn: we didn't find the class
       if (subConfiguration == null)
       {
          log.warning("No configuration found for URI: java:urn:" + pkg);
       }
-      
+
       return subConfiguration;
    }
-   
+
    /**
     * Retrieves the DOM document object from the inputStream.
     * @param inputStream the inputStream of the XML file.
     * @return a loaded Document object for DOM manipulation.
     * @throws Exception if the Document object couldn't be created.
     */
-   private Document getDocument(InputStream inputStream) throws Exception 
+   private Document getDocument(InputStream inputStream) throws Exception
    {
       Validate.notNull(inputStream, "No input stream specified");
-      
+
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
       dbf.setNamespaceAware(true);
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document document = db.parse(inputStream);
-   
+
       document.getDocumentElement().normalize();
-      
+
       return document;
    }
-   
+
    /**
     * Converts a String value to the specified class.
     * @param clazz
     * @param value
     * @return
     */
-   private Object convert(Class<?> clazz, String value) 
+   private Object convert(Class<?> clazz, String value)
    {
       /* TODO create a new Converter class and move this method there for reuse */
-      
-      if (Integer.class.equals(clazz) || int.class.equals(clazz)) 
+
+      if (Integer.class.equals(clazz) || int.class.equals(clazz))
       {
          return Integer.valueOf(value);
-      } 
-      else if (Double.class.equals(clazz) || double.class.equals(clazz)) 
+      }
+      else if (Double.class.equals(clazz) || double.class.equals(clazz))
       {
          return Double.valueOf(value);
-      } 
+      }
       else if (Long.class.equals(clazz) || long.class.equals(clazz))
       {
          return Long.valueOf(value);
@@ -363,21 +364,21 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       {
          return Boolean.valueOf(value);
       }
-      
+
       return value;
    }
-   
+
    /**
-    * 
+    *
     * @author <a href="mailto:german.escobarc@gmail.com">German Escobar</a>
     */
-   private interface PropertiesMapper 
+   private interface PropertiesMapper
    {
       void map(Node element, Map<String,String> properties);
    }
 
    /**
-    * 
+    *
     * @author <a href="mailto:german.escobarc@gmail.com">German Escobar</a>
     */
    private class TagNameAttributeMapper implements PropertiesMapper
@@ -385,43 +386,43 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
 
       public void map(Node element, Map<String, String> properties)
       {
-         // retrieve the attributes of the element 
+         // retrieve the attributes of the element
          NamedNodeMap attributes = element.getAttributes();
-         
+
          for (int k=0; k < attributes.getLength(); k++)
          {
             Node attribute = attributes.item(k);
-            
+
             // build the property name
             String attributeName = attribute.getNodeName();
-            String fullPropertyName = element.getLocalName() + Character.toUpperCase(attributeName.charAt(0)) 
+            String fullPropertyName = element.getLocalName() + Character.toUpperCase(attributeName.charAt(0))
                   + attributeName.substring(1);
-           
+
             // add the property name and its value
             properties.put(fullPropertyName, attribute.getNodeValue());
          }
       }
    }
-   
+
    /**
-    * 
+    *
     * @author <a href="mailto:german.escobarc@gmail.com">German Escobar</a>
     */
    private class TagNameMapper implements PropertiesMapper
    {
-      
+
       public void map(Node element, Map<String, String> properties)
       {
          String value = "";
-         
-         if (!element.hasChildNodes()) 
+
+         if (!element.hasChildNodes())
          {
             throw new ConfigurationException("Node " + element.getNodeName() + " has no value");
          }
-         
+
          value = element.getChildNodes().item(0).getNodeValue();
          properties.put(element.getLocalName(), value);
       }
-      
+
    }
 }

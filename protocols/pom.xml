@@ -25,8 +25,12 @@
 
   <!--  Modules -->
   <modules>
+    <module>jmx</module>
+    <module>local</module>
+    <module>osgi</module>
+    <module>osgi-bundle</module>
     <module>servlet-2.5</module>
     <module>servlet-3</module>
-    <module>local</module>
   </modules>
+  
 </project>
