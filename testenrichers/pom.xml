@@ -23,29 +23,10 @@
   <url>http://www.jboss.org</url>
   <description>Arquillian TestEnricher Aggregator</description>
 
-  <!--  Profiles -->
-  <profiles>
-  
-    <!-- Build all Arquillian modules -->
-    <profile>
-      <id>all</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>cdi</module>
-        <module>ejb</module>
-        <module>osgi</module>
-        <module>resource</module>
-      </modules>
-    </profile>
-
-    <!-- Build Arquillian OSGi modules -->
-    <profile>
-      <id>osgi</id>
-      <modules>
-        <module>osgi</module>
-      </modules>
-    </profile>
-  </profiles>
+  <!-- Modules -->
+  <modules>
+    <module>cdi</module>
+    <module>ejb</module>
+    <module>resource</module>
+  </modules>
 </project>
