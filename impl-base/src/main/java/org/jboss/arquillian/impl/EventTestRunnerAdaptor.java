@@ -22,6 +22,7 @@ import java.util.Stack;
 import org.jboss.arquillian.impl.context.ContextLifecycleManager;
 import org.jboss.arquillian.impl.context.TestContext;
 import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestMethodExecutor;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestRunnerAdaptor;
@@ -43,11 +44,11 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
 {
    private ContextLifecycleManager contextLifecycle;
    private Stack<Context> activeContext = new Stack<Context>();
-   
+
    public EventTestRunnerAdaptor(ContextLifecycleManager contextLifecycle)
    {
       Validate.notNull(contextLifecycle, "ContextLifecycle must be specified");
-      
+
       this.contextLifecycle = contextLifecycle;
    }
 
@@ -59,7 +60,7 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
       }
       return activeContext.peek();
    }
-   
+
    public void beforeSuite() throws Exception
    {
       Context suiteContext = contextLifecycle.createRestoreSuiteContext();
@@ -69,7 +70,7 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
       }
       finally
       {
-         activeContext.push(suiteContext);         
+         activeContext.push(suiteContext);
       }
    }
 
@@ -82,18 +83,20 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
       }
       finally
       {
-         activeContext.pop();                  
+         activeContext.pop();
       }
    }
 
    public void beforeClass(Class<?> testClass) throws Exception
    {
       Validate.notNull(testClass, "TestClass must be specified");
-      
+
       Context classContext = contextLifecycle.createRestoreClassContext(testClass);
       try
       {
-         classContext.fire(new BeforeClass(testClass));
+         BeforeClass event = new BeforeClass(testClass);
+         classContext.add(TestClass.class, event.getTestClass());
+         classContext.fire(event);
       }
       finally
       {
@@ -104,11 +107,11 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
    public void afterClass(Class<?> testClass) throws Exception
    {
       Validate.notNull(testClass, "TestClass must be specified");
-      
+
       contextLifecycle.createRestoreClassContext(testClass).fire(new AfterClass(testClass));
       try
       {
-         contextLifecycle.destroyClassContext(testClass);         
+         contextLifecycle.destroyClassContext(testClass);
       }
       finally
       {
@@ -120,7 +123,7 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
    {
       Validate.notNull(testInstance, "TestInstance must be specified");
       Validate.notNull(testMethod, "TestMethod must be specified");
-      
+
       TestContext testContext = contextLifecycle.createRestoreTestContext(testInstance);
       try
       {
@@ -147,11 +150,11 @@ public class EventTestRunnerAdaptor implements TestRunnerAdaptor
          activeContext.pop();
       }
    }
-   
+
    public TestResult test(TestMethodExecutor testMethodExecutor) throws Exception
    {
       Validate.notNull(testMethodExecutor, "TestMethodExecutor must be specified");
-      
+
       Test test = new Test(testMethodExecutor);
       TestContext context = contextLifecycle.createRestoreTestContext(testMethodExecutor.getInstance());
       context.fire(test);

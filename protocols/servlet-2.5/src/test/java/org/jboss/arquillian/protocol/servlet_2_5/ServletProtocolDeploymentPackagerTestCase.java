@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.jboss.arquillian.protocol.servlet_2_5.ServletProtocolDeploymentPackager;
+import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -30,6 +31,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 
 /**
@@ -44,11 +46,15 @@ public class ServletProtocolDeploymentPackagerTestCase
    @Test
    public void shouldHandleJavaArchive() throws Exception
    {
+      TestClass testClass = new TestClass(getClass());
+      Context context = Mockito.mock(Context.class);
+      Mockito.when(context.get(TestClass.class)).thenReturn(testClass);
+
       Archive<?> archive = new ServletProtocolDeploymentPackager().generateDeployment(
-            new TestDeployment(
-                     ShrinkWrap.create(JavaArchive.class, "applicationArchive.jar"), 
-                     createAuxiliaryArchives()));
-      
+            context, new TestDeployment(
+                             ShrinkWrap.create(JavaArchive.class, "applicationArchive.jar"),
+                             createAuxiliaryArchives()));
+
       Assert.assertTrue(
             "Verify that a defined JavaArchive using EE5 WebArchive protocol is build as EnterpriseArchive",
             EnterpriseArchive.class.isInstance(archive));
@@ -56,7 +62,7 @@ public class ServletProtocolDeploymentPackagerTestCase
       Assert.assertTrue(
             "Verify that the auxiliaryArchives EE Modules are placed in /",
             archive.contains(ArchivePaths.create("/lib/auxiliaryArchive1.jar")));
-      
+
       Assert.assertTrue(
             "Verify that the auxiliaryArchives are placed in /lib",
             archive.contains(ArchivePaths.create("/lib/auxiliaryArchive2.jar")));
@@ -65,30 +71,38 @@ public class ServletProtocolDeploymentPackagerTestCase
             "Verify that the applicationArchive is placed in /",
             archive.contains(ArchivePaths.create("/applicationArchive.jar")));
    }
-   
-   // as of now, War inside War is not supported. need to merge ? 
+
+   // as of now, War inside War is not supported. need to merge ?
    @Test(expected = IllegalArgumentException.class)
    public void shouldHandleWebArchive() throws Exception
    {
+       TestClass testClass = new TestClass(getClass());
+       Context context = Mockito.mock(Context.class);
+       Mockito.when(context.get(TestClass.class)).thenReturn(testClass);
+
       new ServletProtocolDeploymentPackager().generateDeployment(
-            new TestDeployment(
-                  ShrinkWrap.create(WebArchive.class, "applicationArchive.war"), 
-                  createAuxiliaryArchives()));
-      
+            context, new TestDeployment(
+                      ShrinkWrap.create(WebArchive.class, "applicationArchive.war"),
+                      createAuxiliaryArchives()));
+
    }
 
    @Test
    public void shouldHandleEnterpriseArchive() throws Exception
    {
+       TestClass testClass = new TestClass(getClass());
+       Context context = Mockito.mock(Context.class);
+       Mockito.when(context.get(TestClass.class)).thenReturn(testClass);
+
       Archive<?> archive = new ServletProtocolDeploymentPackager().generateDeployment(
-            new TestDeployment(
-                  ShrinkWrap.create(EnterpriseArchive.class, "applicationArchive.ear"), 
-                  createAuxiliaryArchives()));
+            context, new TestDeployment(
+                      ShrinkWrap.create(EnterpriseArchive.class, "applicationArchive.ear"),
+                      createAuxiliaryArchives()));
 
       Assert.assertTrue(
             "Verify that the auxiliaryArchives are placed in /",
             archive.contains(ArchivePaths.create("arquillian-protocol.war")));
-      
+
       Assert.assertTrue(
             "Verify that the auxiliaryArchives are placed in /lib",
             archive.contains(ArchivePaths.create("/lib/auxiliaryArchive1.jar")));
@@ -98,12 +112,12 @@ public class ServletProtocolDeploymentPackagerTestCase
             archive.contains(ArchivePaths.create("/lib/auxiliaryArchive2.jar")));
    }
 
-   private Collection<Archive<?>> createAuxiliaryArchives() 
+   private Collection<Archive<?>> createAuxiliaryArchives()
    {
       List<Archive<?>> archives = new ArrayList<Archive<?>>();
       archives.add(ShrinkWrap.create(JavaArchive.class, "auxiliaryArchive1.jar"));
       archives.add(ShrinkWrap.create(JavaArchive.class, "auxiliaryArchive2.jar"));
-      
+
       return archives;
    }
 }

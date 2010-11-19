@@ -20,7 +20,7 @@ import org.jboss.arquillian.spi.TestRunner;
 
 /**
  * TestRunners
- * 
+ *
  * Helper factory for loading TestRunners in container.
  *
  * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
@@ -34,19 +34,19 @@ public final class TestRunners
    }
 
    /**
-    * Dynamically loads an instance of a test runner. 
-    * 
+    * Dynamically loads an instance of a test runner.
+    *
     * @return A Initialized TestRunner
     * @throws IllegalStateException if multiple TestRunners found in classpath.
     */
    public static TestRunner getTestRunner()
    {
-      return getTestRunner(SecurityActions.getThreadContextClassLoader());
+      return getTestRunner(TCCLActions.getClassLoader());
    }
 
    /**
-    * Dynamically loads an instance of a test runner. 
-    * 
+    * Dynamically loads an instance of a test runner.
+    *
     * @return A Initialized TestRunner
     * @throws IllegalStateException if multiple TestRunners found in classpath.
     */
@@ -54,9 +54,12 @@ public final class TestRunners
    {
       ServiceLoader<TestRunner> serviceLoader = ServiceLoader.load(TestRunner.class, classLoader);
 
+      if (serviceLoader.getProviders().size() == 0)
+          throw new IllegalStateException("Cannot load TestRunner from: " + classLoader);
+
       if (serviceLoader.getProviders().size() > 1)
-         throw new IllegalStateException("Multiple TestRunners found, only one allowed. Check your classpath");
-      
+          throw new IllegalStateException("Multiple TestRunners found: " + classLoader);
+
       return serviceLoader.iterator().next();
    }
 }

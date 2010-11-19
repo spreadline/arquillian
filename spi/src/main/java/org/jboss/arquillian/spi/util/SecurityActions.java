@@ -18,20 +18,19 @@ package org.jboss.arquillian.spi.util;
 
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
 /**
  * SecurityActions
- * 
+ *
  * A set of privileged actions that are not to leak out
- * of this package 
+ * of this package
  *
  * @author <a href="mailto:andrew.rubinger@jboss.org">ALR</a>
  * @version $Revision: $
  */
-final class SecurityActions
+public final class SecurityActions
 {
 
    //-------------------------------------------------------------------------------||
@@ -51,28 +50,20 @@ final class SecurityActions
    //-------------------------------------------------------------------------------||
 
    /**
-    * Obtains the Thread Context ClassLoader
-    */
-   static ClassLoader getThreadContextClassLoader()
-   {
-      return AccessController.doPrivileged(GetTcclAction.INSTANCE);
-   }
-
-   /**
     * Obtains the Constructor specified from the given Class and argument types
     * @param clazz
     * @param argumentTypes
     * @return
     * @throws NoSuchMethodException
     */
-   static Constructor<?> getConstructor(final Class<?> clazz, final Class<?>... argumentTypes)
+   public static <T> Constructor<? extends T> getConstructor(final Class<T> clazz, final Class<?>... argumentTypes)
          throws NoSuchMethodException
    {
       try
       {
-         return AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor<?>>()
+         return AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor<? extends T>>()
          {
-            public Constructor<?> run() throws NoSuchMethodException
+            public Constructor<? extends T> run() throws NoSuchMethodException
             {
                return clazz.getConstructor(argumentTypes);
             }
@@ -104,9 +95,9 @@ final class SecurityActions
    }
 
    /**
-    * Create a new instance by finding a constructor that matches the argumentTypes signature 
+    * Create a new instance by finding a constructor that matches the argumentTypes signature
     * using the arguments for instantiation.
-    * 
+    *
     * @param className Full classname of class to create
     * @param argumentTypes The constructor argument types
     * @param arguments The constructor arguments
@@ -116,8 +107,7 @@ final class SecurityActions
     * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
     * @author <a href="mailto:andrew.rubinger@jboss.org">ALR</a>
     */
-   static <T> T newInstance(final String className, final Class<?>[] argumentTypes, final Object[] arguments,
-         final Class<T> expectedType)
+   public static <T> T newInstance(final String className, final Class<?>[] argumentTypes, final Object[] arguments, final Class<T> expectedType)
    {
       if (className == null)
       {
@@ -134,7 +124,7 @@ final class SecurityActions
       final Object obj;
       try
       {
-         final ClassLoader tccl = getThreadContextClassLoader();
+         final ClassLoader tccl = TCCLActions.getClassLoader();
          final Class<?> implClass = Class.forName(className, false, tccl);
          Constructor<?> constructor = getConstructor(implClass, argumentTypes);
          obj = constructor.newInstance(arguments);
@@ -157,22 +147,4 @@ final class SecurityActions
                + obj.getClass().getName());
       }
    }
-
-   //-------------------------------------------------------------------------------||
-   // Inner Classes ----------------------------------------------------------------||
-   //-------------------------------------------------------------------------------||
-
-   /**
-    * Single instance to get the TCCL
-    */
-   private enum GetTcclAction implements PrivilegedAction<ClassLoader> {
-      INSTANCE;
-
-      public ClassLoader run()
-      {
-         return Thread.currentThread().getContextClassLoader();
-      }
-
-   }
-
 }

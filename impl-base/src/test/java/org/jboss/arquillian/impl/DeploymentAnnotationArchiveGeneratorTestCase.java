@@ -16,6 +16,9 @@
  */
 package org.jboss.arquillian.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import junit.framework.Assert;
 
 import org.jboss.arquillian.api.Deployment;
@@ -34,37 +37,39 @@ import org.junit.Test;
  * DeploymentAnnotationArchiveGeneratorTestCase
  *
  * @author <a href="mailto:aknutsen@redhat.com">Aslak Knutsen</a>
- * @version $Revision: $
+ * @author Thomas.Diesler@jboss.com
  */
 public class DeploymentAnnotationArchiveGeneratorTestCase
 {
-
-   @Test(expected = IllegalArgumentException.class)
-   public void shouldThrowExceptionOnDeploymentNotPresent() throws Exception
+   @Test
+   public void shouldGenerateArchiveOnDeploymentNotPresent() throws Exception
    {
-      new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(
-            new TestClass(DeploymentNotPresent.class));
+      DeploymentAnnotationArchiveGenerator generator = new DeploymentAnnotationArchiveGenerator();
+      TestClass testCase = new TestClass(DeploymentNotPresent.class);
+
+      Archive<?> archive = generator.generateApplicationArchive(testCase);
+      assertNotNull("Archive generated", archive);
+      assertEquals(DeploymentNotPresent.class.getSimpleName(), archive.getName());
+      ArchivePath path = createArchivePath(DeploymentNotPresent.class);
+      assertTrue("Contains " + path, archive.contains(path));
    }
 
    @Test(expected = IllegalArgumentException.class)
    public void shouldThrowExceptionOnDeploymentNotStatic() throws Exception
    {
-      new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(
-            new TestClass(DeploymentNotStatic.class));
+      new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(new TestClass(DeploymentNotStatic.class));
    }
 
    @Test(expected = IllegalArgumentException.class)
    public void shouldThrowExceptionOnDeploymentWrongReturnType() throws Exception
    {
-      new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(
-            new TestClass(DeploymentWrongReturnType.class));
+      new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(new TestClass(DeploymentWrongReturnType.class));
    }
 
    @Test
    public void shouldIncludeTestClassInDeployment() throws Exception
    {
-      Archive<?> archive = new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(
-            new TestClass(DeploymentOK.class));
+      Archive<?> archive = new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(new TestClass(DeploymentOK.class));
 
       ArchivePath testPath = createArchivePath(DeploymentOK.class);
 
@@ -75,8 +80,7 @@ public class DeploymentAnnotationArchiveGeneratorTestCase
    @Test
    public void shouldNotIncludeTheTestClassIfClassesNotSupportedByTheArchive() throws Exception
    {
-      Archive<?> archive = new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(
-            new TestClass(DeploymentClassesNotSupported.class));
+      Archive<?> archive = new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(new TestClass(DeploymentClassesNotSupported.class));
 
       // verify that nothing was added to the archive
       Assert.assertTrue(archive.getContent().isEmpty());
@@ -85,20 +89,19 @@ public class DeploymentAnnotationArchiveGeneratorTestCase
    @Test
    public void shouldNotIncludeTheTestClassIfRunAsClient() throws Exception
    {
-      Archive<?> archive = new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(
-            new TestClass(DeploymentRunAsClient.class));
-      
+      Archive<?> archive = new DeploymentAnnotationArchiveGenerator().generateApplicationArchive(new TestClass(DeploymentRunAsClient.class));
+
       ArchivePath testPath = createArchivePath(DeploymentRunAsClient.class);
-      
+
       // verify that the test class was not added
       Assert.assertFalse(archive.contains(testPath));
    }
-   
+
    private ArchivePath createArchivePath(Class<?> clazz)
    {
       return ArchivePaths.create(clazz.getName().replaceAll("\\.", "/") + ".class");
    }
-   
+
    private static class DeploymentNotPresent
    {
    }

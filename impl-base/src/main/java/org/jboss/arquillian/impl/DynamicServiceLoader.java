@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jboss.arquillian.spi.ServiceLoader;
+import org.jboss.arquillian.spi.util.SecurityActions;
+import org.jboss.arquillian.spi.util.TCCLActions;
 
 /**
  * ServiceLoader implementation that use META-INF/services/interface files to registered Services.
@@ -44,7 +46,7 @@ public class DynamicServiceLoader implements ServiceLoader
    private static Logger logger = Logger.getLogger(DynamicServiceLoader.class.getName());
 
    private static final String SERVICES = "META-INF/services";
-   
+
    //-------------------------------------------------------------------------------------||
    // Required Implementations - ServiceLoader -------------------------------------------||
    //-------------------------------------------------------------------------------------||
@@ -55,12 +57,12 @@ public class DynamicServiceLoader implements ServiceLoader
    public <T> Collection<T> all(Class<T> serviceClass)
    {
       Validate.notNull(serviceClass, "ServiceClass must be provided");
-      
+
       return createInstances(
-            serviceClass, 
-            load(serviceClass, SecurityActions.getThreadContextClassLoader()));
+            serviceClass,
+            load(serviceClass, TCCLActions.getClassLoader()));
    }
-   
+
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.ServiceLoader#onlyOne(java.lang.Class)
     */
@@ -68,9 +70,9 @@ public class DynamicServiceLoader implements ServiceLoader
    {
       Validate.notNull(serviceClass, "ServiceClass must be provided");
 
-      Set<Class<? extends T>> serviceImpls = load(serviceClass, SecurityActions.getThreadContextClassLoader());
+      Set<Class<? extends T>> serviceImpls = load(serviceClass, TCCLActions.getClassLoader());
       verifyOnlyOneOrSameImplementation(serviceClass, serviceImpls);
-      
+
       return createInstance(serviceImpls.iterator().next());
    }
 
@@ -81,10 +83,10 @@ public class DynamicServiceLoader implements ServiceLoader
    {
       Validate.notNull(serviceClass, "ServiceClass must be provided");
       Validate.notNull(defaultServiceClass, "DefaultServiceClass must be provided");
-      
+
       Class<? extends T> serviceImplToCreate = defaultServiceClass;
-      
-      Set<Class<? extends T>> serviceImpls = load(serviceClass, SecurityActions.getThreadContextClassLoader());
+
+      Set<Class<? extends T>> serviceImpls = load(serviceClass, TCCLActions.getClassLoader());
       if(serviceImpls.size() > 0)
       {
          verifySameImplementation(serviceClass, serviceImpls);
@@ -92,7 +94,7 @@ public class DynamicServiceLoader implements ServiceLoader
       }
       return createInstance(serviceImplToCreate);
    }
-   
+
    //-------------------------------------------------------------------------------------||
    // Internal Helper Methods ------------------------------------------------------------||
    //-------------------------------------------------------------------------------------||
@@ -102,7 +104,7 @@ public class DynamicServiceLoader implements ServiceLoader
       if(providers == null || providers.size() == 0)
       {
          throw new IllegalStateException(
-               "No implementation found for " + 
+               "No implementation found for " +
                serviceClass.getName() + ", please check your classpath");
       }
       if(providers.size() > 1)
@@ -111,7 +113,7 @@ public class DynamicServiceLoader implements ServiceLoader
          verifySameImplementation(serviceClass, providers);
       }
    }
-   
+
    private <T> void verifySameImplementation(Class<T> serviceClass, Collection<Class<? extends T>> providers)
    {
       boolean providersAreTheSame = false;
@@ -124,26 +126,26 @@ public class DynamicServiceLoader implements ServiceLoader
             firstProvider = provider;
             continue;
          }
-         if(firstProvider == provider) 
+         if(firstProvider == provider)
          {
             providersAreTheSame = true;
-         } 
+         }
          else
          {
             throw new IllegalStateException(
-                  "More then one implementation found for " 
+                  "More then one implementation found for "
                   + serviceClass.getName() + ", " +
-                  "please check your classpath. The found implementations are " + toClassString(providers));            
+                  "please check your classpath. The found implementations are " + toClassString(providers));
          }
       }
       if(providersAreTheSame)
       {
          logger.warning(
-               "More then one reference to the same implementation was found for " + 
+               "More then one reference to the same implementation was found for " +
                serviceClass.getName() + ", please verify you classpath");
       }
    }
-   
+
    private String toClassString(Collection<?> providers)
    {
       StringBuilder sb = new StringBuilder();
@@ -153,12 +155,12 @@ public class DynamicServiceLoader implements ServiceLoader
       }
       return sb.subSequence(0, sb.length()-2).toString();
    }
-   
+
    //-------------------------------------------------------------------------------------||
    // Internal Helper Methods - Service Loading ------------------------------------------||
    //-------------------------------------------------------------------------------------||
 
-   private <T> Set<Class<? extends T>> load(Class<T> serviceClass, ClassLoader loader) 
+   private <T> Set<Class<? extends T>> load(Class<T> serviceClass, ClassLoader loader)
    {
       String serviceFile = SERVICES + "/" + serviceClass.getName();
 
@@ -171,7 +173,7 @@ public class DynamicServiceLoader implements ServiceLoader
             final URL url = enumeration.nextElement();
             final InputStream is = url.openStream();
             BufferedReader reader = null;
-            
+
             try
             {
                reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -183,9 +185,9 @@ public class DynamicServiceLoader implements ServiceLoader
                   {
                      line = line.substring(0, comment);
                   }
-   
+
                   line.trim();
-   
+
                   if (line.length() > 0)
                   {
                      try
@@ -205,7 +207,7 @@ public class DynamicServiceLoader implements ServiceLoader
             }
             finally
             {
-               if (reader != null) 
+               if (reader != null)
                {
                   reader.close();
                }
@@ -218,12 +220,12 @@ public class DynamicServiceLoader implements ServiceLoader
       }
       return providers;
    }
-   
+
    /**
     * Create a new instance of the found Service. <br/>
-    * 
+    *
     * Verifies that the found ServiceImpl implements Service.
-    * 
+    *
     * @param <T>
     * @param serviceType The Service interface
     * @param className The name of the implementation class
@@ -242,12 +244,12 @@ public class DynamicServiceLoader implements ServiceLoader
          }
          return constructor.newInstance();
       }
-      catch (Exception e) 
+      catch (Exception e)
       {
          throw new RuntimeException("Could not create a new instance of Service implementation " + serviceImplClass.getName(), e);
       }
    }
-   
+
    private <T> Set<T> createInstances(Class<T> serviceType, Set<Class<? extends T>> providers)
    {
       Set<T> providerImpls = new LinkedHashSet<T>();

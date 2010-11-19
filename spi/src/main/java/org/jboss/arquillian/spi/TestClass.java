@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 
 /**
  * Wraps a class to be run, providing method validation and annotation searching.
- * 
+ *
  * @author thomas.diesler@jboss.com
  * @version $Revision: $
  */
@@ -48,22 +48,27 @@ public class TestClass
       return testClass.getName();
    }
 
+   public String getSimpleName()
+   {
+      return testClass.getSimpleName();
+   }
+
    public boolean isAnnotationPresent(Class<? extends Annotation> annotation)
    {
       return testClass.isAnnotationPresent(annotation);
    }
-   
+
    public <A extends Annotation> A getAnnotation(Class<A> annotation)
    {
       return testClass.getAnnotation(annotation);
    }
-   
+
    public Method getMethod(Class<? extends Annotation> annotation)
    {
       Method[] methods = testClass.getMethods();
       for(Method method: methods)
       {
-         if(method.isAnnotationPresent(annotation)) 
+         if(method.isAnnotationPresent(annotation))
          {
             return method;
          }

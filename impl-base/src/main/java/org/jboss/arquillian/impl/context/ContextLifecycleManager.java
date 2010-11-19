@@ -131,10 +131,7 @@ public class ContextLifecycleManager
       {
          ClassContext classContext = new ClassContext(createRestoreSuiteContext()); 
          profileBuilder.buildClassContext(classContext, testClass);
-         
-         classContextStore.putIfAbsent(
-               testClass, 
-               classContext);
+         classContextStore.putIfAbsent(testClass, classContext);
       }
       return classContextStore.get(testClass);
    }

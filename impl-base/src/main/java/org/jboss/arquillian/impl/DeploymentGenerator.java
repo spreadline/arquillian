@@ -16,6 +16,7 @@
  */
 package org.jboss.arquillian.impl;
 
+import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.shrinkwrap.api.Archive;
 
@@ -25,13 +26,7 @@ import org.jboss.shrinkwrap.api.Archive;
  * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public interface DeploymentGenerator 
+public interface DeploymentGenerator
 {
-
-   /**
-    * @param testCase
-    * @return
-    */
-   Archive<?> generate(TestClass testCase);
-
+   Archive<?> generate(Context context, TestClass testCase);
 }
