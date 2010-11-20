@@ -36,7 +36,7 @@ import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestEnricher;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -207,17 +207,17 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
 
       ArrayList<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(null);
       if (serverArr.size() > 1)
-         log.warn("Multiple MBeanServer instances: " + serverArr);
+         log.warning("Multiple MBeanServer instances: " + serverArr);
 
       if (serverArr.size() > 0)
       {
          mbeanServer = serverArr.get(0);
-         log.debug("Found MBeanServer: " + mbeanServer.getDefaultDomain());
+         log.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
       }
 
       if (mbeanServer == null)
       {
-         log.debug("No MBeanServer, create one ...");
+         log.fine("No MBeanServer, create one ...");
          mbeanServer = MBeanServerFactory.createMBeanServer();
       }
 

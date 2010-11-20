@@ -31,7 +31,7 @@ import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -51,17 +51,17 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
 
    public void setup(Context context, Configuration configuration)
    {
-      log.debug("Setup OSGi Container");
+      log.fine("Setup OSGi Container");
    }
 
    public void start(Context context) throws LifecycleException
    {
-      log.debug("Start OSGi Container");
+      log.fine("Start OSGi Container");
    }
 
    public void stop(Context context) throws LifecycleException
    {
-      log.debug("Stop OSGi Container");
+      log.fine("Stop OSGi Container");
    }
 
    protected void installSupportBundles()
@@ -144,7 +144,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
    {
       try
       {
-         log.debug("Installing bundle: " + archive.getName());
+         log.fine("Installing bundle: " + archive.getName());
          return installBundle(archive);
       }
       catch (RuntimeException rte)
@@ -161,7 +161,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
    {
       try
       {
-         log.debug("Resolve bundle: " + handle.getSymbolicName());
+         log.fine("Resolve bundle: " + handle.getSymbolicName());
          resolveBundle(handle);
       }
       catch (RuntimeException rte)
@@ -178,7 +178,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
    {
       try
       {
-         log.debug("Uninstalling bundle: " + handle.getSymbolicName());
+         log.fine("Uninstalling bundle: " + handle.getSymbolicName());
          uninstallBundle(handle);
       }
       catch (RuntimeException rte)
@@ -187,7 +187,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
       catch (Exception ex)
       {
-         log.error("Cannot uninstall bundle: " + handle, ex);
+         log.severe("Cannot uninstall bundle: " + handle, ex);
       }
    }
 
@@ -243,7 +243,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
             }
             catch (Exception ex)
             {
-               log.error("Cannot register: " + innerClass.getName());
+               log.severe("Cannot register: " + innerClass.getName());
             }
          }
       }

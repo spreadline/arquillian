@@ -33,6 +33,7 @@ import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
+import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -42,7 +43,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
-import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
 /**
@@ -90,7 +90,7 @@ public class MockServletContext implements ServletContext
 			webappRoot = new File(path);
 			if (!webappRoot.exists() || !webappRoot.isDirectory())
 			{
-				//log.warn("WARNING: The webapp root directory is invalid: " + path);
+				//log.warning("WARNING: The webapp root directory is invalid: " + path);
 				webappRoot = null;
 			}
 		}
@@ -505,7 +505,7 @@ public class MockServletContext implements ServletContext
 	 */
 	public void log(Exception e, String msg)
 	{
-		//log.error(msg, e);
+		//log.servere(msg, e);
 	}
 
 	/**
@@ -529,7 +529,7 @@ public class MockServletContext implements ServletContext
 	 */
 	public void log(String msg, Throwable cause)
 	{
-		//log.error(msg, cause);
+		//log.servere(msg, cause);
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package org.jboss.arquillian.container.jsr88.remote_1_2;
 
 import javax.enterprise.deploy.shared.ModuleType;
+
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.ResourceAdapterArchive;

@@ -23,7 +23,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -40,6 +39,7 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.tomcat_6.api.ShrinkWrapStandardContext;
 

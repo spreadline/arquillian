@@ -18,7 +18,6 @@ package org.jboss.arquillian.prototyping.context;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBAccessException;
@@ -32,6 +31,7 @@ import org.jboss.arquillian.container.openejb.embedded_3_1.ejb.EchoLocalBusiness
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.prototyping.context.api.ArquillianContext;
 import org.jboss.arquillian.prototyping.context.api.openejb.OpenEJBArquillianContext;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;

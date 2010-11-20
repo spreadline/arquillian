@@ -262,7 +262,7 @@ public class JBossASRemoteContainer implements DeployableContainer
       }
       if (remainingDeployments.size() > 0)
       {
-         //log.error("Failed to undeploy these artifacts: " + remainingDeployments);
+         //log.servere("Failed to undeploy these artifacts: " + remainingDeployments);
       }
       failedUndeployments.clear();
    }

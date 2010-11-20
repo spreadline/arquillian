@@ -28,9 +28,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import org.jboss.arquillian.selenium.SeleniumExtensionConfiguration;
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * SeleniumServerRunner allows to run and kill Selenium server, if present on

@@ -23,16 +23,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jboss.arquillian.selenium.spi.Instantiator;
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * Utility to check and sort instantiators according to different conditions
- * 
+ *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- * 
+ *
  * @see Instantiator
  */
 public class InstantiatorUtil
@@ -71,10 +70,7 @@ public class InstantiatorUtil
          }
       }
 
-      if (log.isLoggable(Level.FINE))
-      {
-         log.fine("There were totally " + collection.size() + " Selenium Instantiator registered, after filtering for '" + needle.getName() + "' were " + list.size() + " left.");
-      }
+      log.fine("There were totally " + collection.size() + " Selenium Instantiator registered, after filtering for '" + needle.getName() + "' were " + list.size() + " left.");
 
       return list;
    }
@@ -96,10 +92,7 @@ public class InstantiatorUtil
 
       Instantiator<T> candidate = list.get(list.size() - 1);
 
-      if (log.isLoggable(Level.FINE))
-      {
-         log.fine("The implementation " + candidate.getClass() + " was chosen between " + list.size() + " instantiators/destroyers because of precedence " + candidate.getPrecedence() + ".");
-      }
+      log.fine("The implementation " + candidate.getClass() + " was chosen between " + list.size() + " instantiators/destroyers because of precedence " + candidate.getPrecedence() + ".");
 
       return list.get(list.size() - 1);
    }
@@ -113,7 +106,6 @@ public class InstantiatorUtil
     * @return The instantiator with highest priority or {@code null} if list was empty
     * @return
     */
-   @SuppressWarnings("unchecked")
    public static <T> Instantiator<T> highest(Collection<Instantiator> collection, Class<T> needle)
    {
       return highest(filter(collection, needle));

@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.admin.cli.resources.AddResources;
 import org.glassfish.api.ActionReport;
@@ -45,6 +43,7 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.glassfish.api.ShrinkwrapReadableArchive;
 import org.jvnet.hk2.annotations.Service;
@@ -68,11 +67,11 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
    private Server server;
 
    private GlassFishConfiguration containerConfig;
-   
+
    public GlassFishEmbeddedContainer()
    {
    }
-   
+
    public void setup(Context context, Configuration arquillianConfig)
    {
       containerConfig = arquillianConfig.getContainerConfig(GlassFishConfiguration.class);
@@ -91,7 +90,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
          }
          embeddedFsBuilder.configurationFile(domainXmlFile);
       }
-      
+
       server = serverBuilder.embeddedFileSystem(embeddedFsBuilder.build()).build();
       server.addContainer(ContainerBuilder.Type.all);
 
@@ -108,7 +107,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
             // GlassFish's resources XML parser is hardcoded to look for the DTD in this location
             copyResourceDTDsToFileSystem(server.getFileSystem().instanceRoot, "META-INF/", "sun-resources_1_4.dtd");
             copyResourceDTDsToFileSystem(server.getFileSystem().instanceRoot, "dtds/" , "glassfish-resources_1_5.dtd");
-            
+
             ParameterMap params = new ParameterMap();
             params.add(DEFAULT_ASADMIN_PARAM, containerConfig.getSunResourcesXml());
             {
@@ -124,7 +123,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
 
    public void start(Context context) throws LifecycleException
    {
-      try 
+      try
       {
          Port httpPort = server.createPort(containerConfig.getBindHttpPort());
          for(EmbeddedContainer container : server.getContainers())
@@ -133,8 +132,8 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
             container.bind(httpPort, Port.HTTP_PROTOCOL);
          }
          server.start();
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new LifecycleException("Could not start container", e);
       }
@@ -142,11 +141,11 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
 
    public void stop(Context context) throws LifecycleException
    {
-      try 
+      try
       {
          server.stop();
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new LifecycleException("Could not stop container", e);
       }
@@ -154,24 +153,24 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
 
    public ContainerMethodExecutor deploy(Context context, Archive<?> archive) throws DeploymentException
    {
-      try 
+      try
       {
          DeployCommandParameters params = new DeployCommandParameters();
          params.enabled = true;
          params.target = target;
          params.name = createDeploymentName(archive.getName());
-         
+
          server.getDeployer().deploy(
                archive.as(ShrinkwrapReadableArchive.class),
                params);
 
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new DeploymentException("Could not deploy " + archive.getName(), e);
       }
 
-      try 
+      try
       {
          return new ServletMethodExecutor(
                new URL(
@@ -180,8 +179,8 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
                      containerConfig.getBindHttpPort(),
                      "/")
                );
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new RuntimeException("Could not create ContainerMethodExecutor", e);
       }
@@ -192,18 +191,18 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
       UndeployCommandParameters params = new UndeployCommandParameters();
       params.target = target;
       params.name = createDeploymentName(archive.getName());
-      
-      try 
+
+      try
       {
          server.getDeployer().undeploy(params.name, params);
       }
-      catch (Exception e) 
+      catch (Exception e)
       {
          throw new DeploymentException("Could not undeploy " + archive.getName(), e);
       }
    }
-   
-   private String createDeploymentName(String archiveName) 
+
+   private String createDeploymentName(String archiveName)
    {
       return archiveName.substring(0, archiveName.lastIndexOf("."));
    }
@@ -248,7 +247,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
          if (!resourcesDtd.exists())
          {
             resourcesDtd.getParentFile().mkdirs();
-            
+
             copyWithClose(
                   dtdResource.openStream(),
                   new FileOutputStream(resourcesDtd));
@@ -280,10 +279,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
          }
          catch (final IOException ignore)
          {
-            if (log.isLoggable(Level.FINER))
-            {
                log.finer("Could not close stream due to: " + ignore.getMessage() + "; ignoring");
-            }
          }
          try
          {
@@ -291,10 +287,7 @@ public class GlassFishEmbeddedContainer implements DeployableContainer
          }
          catch (final IOException ignore)
          {
-            if (log.isLoggable(Level.FINER))
-            {
                log.finer("Could not close stream due to: " + ignore.getMessage() + "; ignoring");
-            }
          }
       }
    }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * An arquillian {@link MBeanServer} locator
@@ -48,14 +48,14 @@ public final class MBeanServerLocator
 
       ArrayList<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(null);
       if (serverArr.size() > 1)
-         log.warn("Multiple MBeanServer instances: " + serverArr);
+         log.warning("Multiple MBeanServer instances: " + serverArr);
 
       if (serverArr.size() > 0)
          mbeanServer = serverArr.get(0);
 
       if (mbeanServer == null)
       {
-         log.debug("No MBeanServer, create one ...");
+         log.fine("No MBeanServer, create one ...");
          mbeanServer = MBeanServerFactory.createMBeanServer();
       }
 

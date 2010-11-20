@@ -26,7 +26,7 @@ import org.jboss.arquillian.protocol.domain.AbstractDeployableContainer;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * JBossASEmbeddedContainer
@@ -66,7 +66,7 @@ public class JBossASEmbeddedContainer extends AbstractDeployableContainer
          cmd.add("org.jboss.logmanager");
          cmd.add("org.jboss.as.standalone");
 
-         log.infof("Starting container with: %s", cmd.toString());
+         log.info("Starting container with: " + cmd.toString());
          ProcessBuilder processBuilder = new ProcessBuilder(cmd);
          processBuilder.redirectErrorStream(true);
          process = processBuilder.start();

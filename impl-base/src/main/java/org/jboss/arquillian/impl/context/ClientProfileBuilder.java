@@ -16,8 +16,8 @@
  */
 package org.jboss.arquillian.impl.context;
 
-import org.jboss.arquillian.impl.handler.ActivateRunModeTypeDeployment;
 import org.jboss.arquillian.impl.handler.ActivateRunModeTypeClient;
+import org.jboss.arquillian.impl.handler.ActivateRunModeTypeDeployment;
 import org.jboss.arquillian.impl.handler.ArchiveDeploymentExporter;
 import org.jboss.arquillian.impl.handler.ArchiveGenerator;
 import org.jboss.arquillian.impl.handler.ContainerCreator;

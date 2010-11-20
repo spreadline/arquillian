@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.openejb.assembler.classic.AppInfo;
 import org.jboss.arquillian.prototyping.context.api.ArquillianContext;
@@ -29,11 +27,12 @@ import org.jboss.arquillian.prototyping.context.api.openejb.OpenEJBArquillianCon
 import org.jboss.arquillian.prototyping.context.impl.ArquillianContextResolver;
 import org.jboss.arquillian.prototyping.context.impl.BaseContext;
 import org.jboss.arquillian.prototyping.context.spi.ContextualResolver;
+import org.jboss.arquillian.spi.Logger;
 
 /**
- * OpenEJB Container implementation of a {@link ArquillianContext}. 
+ * OpenEJB Container implementation of a {@link ArquillianContext}.
  * TODO Explain more.
- * 
+ *
  * @author <a href="mailto:andrew.rubinger@jboss.org">ALR</a>
  * @version $Revision: $
  */
@@ -42,7 +41,7 @@ public class OpenEJBArquillianContextImpl extends BaseContext implements OpenEJB
 
    /*
     * TODO: Much of this logic is generic and should go into a base ChainedDelegatingContext
-    * which consults a resolver chain (first match should be OK).  Only the definition of 
+    * which consults a resolver chain (first match should be OK).  Only the definition of
     * which resolvers in the chain are container-specific, and this is how we achieve composition
     */
 
@@ -65,7 +64,7 @@ public class OpenEJBArquillianContextImpl extends BaseContext implements OpenEJB
    private final List<ContextualResolver> resolvers;
 
    /**
-    * OpenEJB Metadata Deployment View 
+    * OpenEJB Metadata Deployment View
     */
    private final AppInfo deployment;
 
@@ -93,11 +92,7 @@ public class OpenEJBArquillianContextImpl extends BaseContext implements OpenEJB
       resolvers.add(new ArquillianContextResolver(this));
       resolvers.add(OpenEJBJndiContextResolver.getInstance());
 
-      // Log
-      if (log.isLoggable(Level.FINE))
-      {
-         log.fine("Using resolvers: " + resolvers);
-      }
+      log.fine("Using resolvers: " + resolvers);
 
       // Set
       this.resolvers = Collections.unmodifiableList(resolvers);

@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,6 +29,7 @@ import org.jboss.arquillian.spi.Configuration;
 import org.jboss.arquillian.spi.ConfigurationException;
 import org.jboss.arquillian.spi.ContainerConfiguration;
 import org.jboss.arquillian.spi.ExtensionConfiguration;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.ServiceLoader;
 import org.jboss.arquillian.spi.util.TCCLActions;
 import org.w3c.dom.Document;

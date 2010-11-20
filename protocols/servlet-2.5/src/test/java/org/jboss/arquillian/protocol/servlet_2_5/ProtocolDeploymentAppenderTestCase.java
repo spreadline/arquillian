@@ -16,7 +16,6 @@
  */
 package org.jboss.arquillian.protocol.servlet_2_5;
 
-import org.jboss.arquillian.protocol.servlet_2_5.ProtocolDeploymentAppender;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.junit.Assert;

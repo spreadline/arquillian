@@ -33,7 +33,7 @@ import javax.naming.Context;
 
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.spi.TestClass;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -60,7 +60,7 @@ public class RemoteOSGiContainer extends AbstractOSGiContainer
       String rmiHost = getFrameworkProperty(REMOTE_RMI_HOST, DEFAULT_REMOTE_RMI_HOST);
       Integer rmiPort = Integer.parseInt(getFrameworkProperty(REMOTE_RMI_PORT, DEFAULT_REMOTE_RMI_PORT)) + 100;
       String urlString = System.getProperty("arq.callback.url", "service:jmx:rmi:///jndi/rmi://" + rmiHost + ":" + rmiPort + "/jmxrmi");
-      log.debug("Connecting JMXConnector to: " + urlString);
+      log.fine("Connecting JMXConnector to: " + urlString);
       
       Map<String, Object> env = new HashMap<String, Object>();
       env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory");

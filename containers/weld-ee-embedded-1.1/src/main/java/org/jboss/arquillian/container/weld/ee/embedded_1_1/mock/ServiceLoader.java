@@ -9,14 +9,12 @@
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package org.jboss.arquillian.container.weld.ee.embedded_1_1.mock;
-
-import static java.util.logging.Level.WARNING;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,33 +29,33 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.weld.bootstrap.spi.Metadata;
 
 /**
  * This class handles looking up service providers on the class path. It
  * implements the <a href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider"
  * >Service Provider section of the JAR File Specification</a>.
- * 
+ *
  * The Service Provider programmatic lookup was not specified prior to Java 6 so
  * this interface allows use of the specification prior to Java 6.
- * 
+ *
  * The API is copied from <a
  * href="http://java.sun.com/javase/6/docs/api/java/util/ServiceLoader.html"
  * >java.util.ServiceLoader</a> and enhanced to support the {@link Metadata}
  * contract.
- * 
+ *
  * @author Pete Muir
  * @author <a href="mailto:dev@avalon.apache.org">Avalon Development Team</a>
  * @author Nicklas Karlsson
  */
 public class ServiceLoader<S> implements Iterable<Metadata<S>>
 {
-   
+
    private static class ServiceLoaderMetadata<S> implements Metadata<S>
    {
-      
+
       private final URL file;
       private final int lineNumber;
       private final S value;
@@ -67,19 +65,19 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
          this.lineNumber = lineNumber;
          this.value = value;
       }
-      
+
       public String getLocation()
       {
          return file + "@" + lineNumber;
       }
-      
+
       public S getValue()
       {
          return value;
       }
 
    }
-   
+
    private static final String SERVICES = "META-INF/services";
 
    private static final Logger log = Logger.getLogger("ServiceLoader");
@@ -87,16 +85,16 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
    /**
     * Creates a new service loader for the given service type, using the current
     * thread's context class loader.
-    * 
+    *
     * An invocation of this convenience method of the form
-    * 
+    *
     * {@code ServiceLoader.load(service)</code>}
-    * 
+    *
     * is equivalent to
-    * 
+    *
     * <code>ServiceLoader.load(service,
     *                   Thread.currentThread().getContextClassLoader())</code>
-    * 
+    *
     * @param service The interface or abstract class representing the service
     * @return A new service loader
     */
@@ -107,7 +105,7 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
 
    /**
     * Creates a new service loader for the given service type and class loader.
-    * 
+    *
     * @param service The interface or abstract class representing the service
     * @param loader The class loader to be used to load provider-configuration
     *           files and provider classes, or null if the system class loader
@@ -126,21 +124,21 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
    /**
     * Creates a new service loader for the given service type, using the
     * extension class loader.
-    * 
+    *
     * This convenience method simply locates the extension class loader, call it
     * extClassLoader, and then returns
-    * 
+    *
     * <code>ServiceLoader.load(service, extClassLoader)</code>
-    * 
+    *
     * If the extension class loader cannot be found then the system class loader
     * is used; if there is no system class loader then the bootstrap class
     * loader is used.
-    * 
+    *
     * This method is intended for use when only installed providers are desired.
     * The resulting service will only find and load providers that have been
     * installed into the current Java virtual machine; providers on the
     * application's class path will be ignored.
-    * 
+    *
     * @param service The interface or abstract class representing the service
     * @return A new service loader
     */
@@ -164,11 +162,11 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
 
    /**
     * Clear this loader's provider cache so that all providers will be reloaded.
-    * 
+    *
     * After invoking this method, subsequent invocations of the iterator method
     * will lazily look up and instantiate providers from scratch, just as is
     * done by a newly-created loader.
-    * 
+    *
     * This method is intended for use in situations in which new providers can
     * be installed into a running Java virtual machine.
     */
@@ -298,7 +296,7 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
       }
       catch (NoClassDefFoundError e)
       {
-         log.log(WARNING, "Could not instantiate service class " + serviceClass.getName(), e);
+         log.warning("Could not instantiate service class " + serviceClass.getName(), e);
          return null;
       }
       catch (InvocationTargetException e)
@@ -329,12 +327,12 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
 
    /**
     * Lazily loads the available providers of this loader's service.
-    * 
+    *
     * The iterator returned by this method first yields all of the elements of
     * the provider cache, in instantiation order. It then lazily loads and
     * instantiates any remaining providers, adding each one to the cache in
     * turn.
-    * 
+    *
     * To achieve laziness the actual work of parsing the available
     * provider-configuration files and instantiating providers must be done by
     * the iterator itself. Its hasNext and next methods can therefore throw a
@@ -345,22 +343,22 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
     * is thrown as the next provider is located and instantiated. To write
     * robust code it is only necessary to catch ServiceConfigurationError when
     * using a service iterator.
-    * 
+    *
     * If such an error is thrown then subsequent invocations of the iterator
     * will make a best effort to locate and instantiate the next available
     * provider, but in general such recovery cannot be guaranteed.
-    * 
+    *
     * Design Note Throwing an error in these cases may seem extreme. The
     * rationale for this behavior is that a malformed provider-configuration
     * file, like a malformed class file, indicates a serious problem with the
     * way the Java virtual machine is configured or is being used. As such it is
     * preferable to throw an error rather than try to recover or, even worse,
     * fail silently.
-    * 
+    *
     * The iterator returned by this method does not support removal. Invoking
     * its remove method will cause an UnsupportedOperationException to be
     * thrown.
-    * 
+    *
     * @return An iterator that lazily loads providers for this loader's service
     */
    public Iterator<Metadata<S>> iterator()
@@ -374,7 +372,7 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
 
    /**
     * Returns a string describing this service.
-    * 
+    *
     * @return A descriptive string
     */
    @Override

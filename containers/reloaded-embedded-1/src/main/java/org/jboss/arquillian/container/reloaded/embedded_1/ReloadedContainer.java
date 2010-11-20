@@ -36,7 +36,7 @@ import org.jboss.bootstrap.api.mc.server.MCServerFactory;
 import org.jboss.deployers.client.spi.main.MainDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.reloaded.api.ReloadedDescriptors;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.vdf.api.ShrinkWrapDeployer;

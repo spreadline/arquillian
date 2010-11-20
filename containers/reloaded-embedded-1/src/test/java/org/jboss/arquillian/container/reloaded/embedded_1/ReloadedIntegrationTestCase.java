@@ -16,7 +16,7 @@
  */
 package org.jboss.arquillian.container.reloaded.embedded_1;
 
-import java.util.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

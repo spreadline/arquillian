@@ -27,8 +27,8 @@ import java.net.URL;
 import javax.inject.Inject;
 
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
 import org.jboss.arquillian.osgi.OSGiContainer;
+import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;

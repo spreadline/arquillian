@@ -17,10 +17,10 @@
 package org.jboss.arquillian.impl.handler;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 import org.jboss.arquillian.spi.Configuration;
 import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.event.suite.ClassEvent;
 import org.jboss.arquillian.spi.event.suite.EventHandler;
 import org.jboss.shrinkwrap.api.Archive;

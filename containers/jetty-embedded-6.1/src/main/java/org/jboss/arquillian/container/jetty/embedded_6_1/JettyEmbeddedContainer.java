@@ -17,7 +17,6 @@
 package org.jboss.arquillian.container.jetty.embedded_6_1;
 
 import java.net.URL;
-import java.util.logging.Logger;
 
 import org.jboss.arquillian.protocol.servlet_3.ServletMethodExecutor;
 import org.jboss.arquillian.spi.Configuration;
@@ -26,6 +25,7 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.jetty_6.api.ShrinkWrapWebAppContext;
 import org.mortbay.jetty.Connector;

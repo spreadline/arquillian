@@ -17,8 +17,6 @@
 package org.jboss.arquillian.selenium.event;
 
 import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jboss.arquillian.selenium.SeleniumExtensionConfiguration;
 import org.jboss.arquillian.selenium.annotation.Selenium;
@@ -26,6 +24,7 @@ import org.jboss.arquillian.selenium.instantiator.InstantiatorUtil;
 import org.jboss.arquillian.selenium.spi.Instantiator;
 import org.jboss.arquillian.spi.Configuration;
 import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.event.suite.ClassEvent;
 import org.jboss.arquillian.spi.event.suite.EventHandler;
@@ -39,11 +38,11 @@ import org.jboss.arquillian.spi.event.suite.EventHandler;
  * <br/> @{link {@link Configuration}<br/>
  * <br/>
  * <b>Exports:</b><br/> {@link SeleniumHolder}</br> <br/>
- * 
+ *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
  * @see Selenium
  * @see SeleniumHolder
- * 
+ *
  */
 public class SeleniumStartupHandler implements EventHandler<ClassEvent>
 {
@@ -51,7 +50,7 @@ public class SeleniumStartupHandler implements EventHandler<ClassEvent>
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.jboss.arquillian.spi.event.suite.EventHandler#callback(org.jboss.
     * arquillian.spi.Context, java.lang.Object)
     */
@@ -63,9 +62,9 @@ public class SeleniumStartupHandler implements EventHandler<ClassEvent>
    private void prepareContext(Context context, TestClass testClass)
    {
       Configuration configuration = context.get(Configuration.class);
-      
+
       SeleniumExtensionConfiguration seleniumConfiguration = configuration.getExtensionConfig(SeleniumExtensionConfiguration.class);
-      
+
       SeleniumHolder holder = new SeleniumHolder();
       for (Field f : SecurityActions.getFieldsWithAnnotation(testClass.getJavaClass(), Selenium.class))
       {
@@ -79,10 +78,7 @@ public class SeleniumStartupHandler implements EventHandler<ClassEvent>
             throw new IllegalArgumentException("No creation method was found for object of type " + typeClass.getName());
          }
 
-         if (log.isLoggable(Level.FINE))
-         {
-            log.fine("Using instantiator defined in class: " + instantiator.getClass().getName() + ", with precedence " + instantiator.getPrecedence());
-         }
+         log.fine("Using instantiator defined in class: " + instantiator.getClass().getName() + ", with precedence " + instantiator.getPrecedence());
          holder.hold(typeClass, typeClass.cast(instantiator.create(seleniumConfiguration)), instantiator);
 
       }

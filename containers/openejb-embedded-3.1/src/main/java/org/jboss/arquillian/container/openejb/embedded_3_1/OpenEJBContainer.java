@@ -16,8 +16,6 @@
  */
 package org.jboss.arquillian.container.openejb.embedded_3_1;
 
-import java.util.logging.Logger;
-
 import org.apache.openejb.NoSuchApplicationException;
 import org.apache.openejb.OpenEJBException;
 import org.apache.openejb.UndeployException;
@@ -32,6 +30,7 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.openejb.config.ShrinkWrapConfigurationFactory;
 

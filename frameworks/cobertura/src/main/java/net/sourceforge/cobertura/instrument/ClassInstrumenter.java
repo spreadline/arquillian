@@ -23,7 +23,7 @@
 package net.sourceforge.cobertura.instrument;
 
 import java.util.Collection;
-import java.util.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;

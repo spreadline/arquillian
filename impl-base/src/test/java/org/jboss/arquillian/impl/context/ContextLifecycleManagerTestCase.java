@@ -18,11 +18,6 @@ package org.jboss.arquillian.impl.context;
 
 import junit.framework.Assert;
 
-import org.jboss.arquillian.impl.context.ClassContext;
-import org.jboss.arquillian.impl.context.ContextLifecycleManager;
-import org.jboss.arquillian.impl.context.ProfileBuilder;
-import org.jboss.arquillian.impl.context.SuiteContext;
-import org.jboss.arquillian.impl.context.TestContext;
 import org.jboss.arquillian.spi.ServiceLoader;
 import org.jboss.arquillian.spi.event.suite.Before;
 import org.jboss.arquillian.spi.event.suite.ClassEvent;

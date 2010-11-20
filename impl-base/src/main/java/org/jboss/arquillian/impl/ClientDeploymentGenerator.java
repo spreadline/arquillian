@@ -26,10 +26,10 @@ import org.jboss.arquillian.spi.AuxiliaryArchiveAppender;
 import org.jboss.arquillian.spi.AuxiliaryArchiveProcessor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
-import org.jboss.arquillian.spi.TestDeployment;
 import org.jboss.arquillian.spi.DeploymentPackager;
 import org.jboss.arquillian.spi.ServiceLoader;
 import org.jboss.arquillian.spi.TestClass;
+import org.jboss.arquillian.spi.TestDeployment;
 import org.jboss.shrinkwrap.api.Archive;
 
 /**

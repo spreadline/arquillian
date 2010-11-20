@@ -28,8 +28,8 @@ import javax.management.MBeanServerInvocationHandler;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
 import org.jboss.arquillian.osgi.OSGiContainer;
+import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.osgi.spi.util.BundleInfo;

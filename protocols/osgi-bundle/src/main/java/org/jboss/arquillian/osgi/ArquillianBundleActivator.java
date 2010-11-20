@@ -30,7 +30,7 @@ import org.jboss.arquillian.protocol.jmx.JMXTestRunner.TestClassLoader;
 import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
 import org.jboss.arquillian.testenricher.osgi.BundleContextHolder;
 import org.jboss.arquillian.testenricher.osgi.OSGiTestEnricher;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -116,7 +116,7 @@ public class ArquillianBundleActivator implements BundleActivator
       if (sref != null)
       {
          MBeanServer mbeanServer = (MBeanServer)context.getService(sref);
-         log.debug("Found MBeanServer fom service: " + mbeanServer.getDefaultDomain());
+         log.fine("Found MBeanServer fom service: " + mbeanServer.getDefaultDomain());
          return mbeanServer;
       }
 

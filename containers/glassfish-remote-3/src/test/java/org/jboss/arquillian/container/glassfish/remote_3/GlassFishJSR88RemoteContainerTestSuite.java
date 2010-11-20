@@ -17,6 +17,7 @@
 package org.jboss.arquillian.container.glassfish.remote_3;
 
 import java.io.File;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

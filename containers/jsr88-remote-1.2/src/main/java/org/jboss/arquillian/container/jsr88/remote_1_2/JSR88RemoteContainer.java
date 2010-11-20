@@ -20,11 +20,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.enterprise.deploy.shared.CommandType;
+import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.shared.factories.DeploymentFactoryManager;
 import javax.enterprise.deploy.spi.DeploymentManager;
+import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.factories.DeploymentFactory;
 import javax.enterprise.deploy.spi.status.ProgressObject;
@@ -36,6 +37,7 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -61,7 +63,7 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
  * method.</p>
  *
  * <p>JSR 88 deploys the archive using an {@link InputStream}. The deployed
- * archive is assigned a random name. You can specify a custom name for 
+ * archive is assigned a random name. You can specify a custom name for
  * a war in the <code>module-name</code> element of the module deployment
  * descriptor (web.xml).</p>
  *
@@ -83,27 +85,27 @@ public class JSR88RemoteContainer implements DeployableContainer
    private boolean moduleStarted = false;
 
    private JSR88Configuration containerConfig;
-   
+
    public JSR88RemoteContainer()
    {
       moduleTypeMapper = new JSR88ModuleTypeMapper();
    }
-   
+
    public void setup(Context context, Configuration arquillianConfig)
    {
       containerConfig = arquillianConfig.getContainerConfig(getContainerConfigurationClass());
    }
-   
+
    public void start(Context context) throws LifecycleException
    {
-      try 
+      try
       {
          initDeploymentManager(containerConfig.getDeploymentFactoryClass(),
                containerConfig.getDeploymentUri(),
                containerConfig.getDeploymentUsername(),
                containerConfig.getDeploymentPassword());
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new LifecycleException("Could not connect to container", e);
       }
@@ -151,7 +153,7 @@ public class JSR88RemoteContainer implements DeployableContainer
          throw new DeploymentException("Could not determine module id, likely because module did not deploy");
       }
 
-      try 
+      try
       {
          // FIXME pass moduleId to ServletMethodExecutor since we can't guarantee anymore it's /test
          return new ServletMethodExecutor(
@@ -161,8 +163,8 @@ public class JSR88RemoteContainer implements DeployableContainer
                      containerConfig.getRemoteServerHttpPort(),
                      "/")
                );
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new RuntimeException("Could not create ContainerMethodExecutor", e);
       }
@@ -180,17 +182,17 @@ public class JSR88RemoteContainer implements DeployableContainer
       {
          throw new DeploymentException("Could not undeploy since deployment manager was not loaded");
       }
-      
+
       try
       {
          PROGRESS_BARRIER.reset();
          TargetModuleID moduleInfo = context.get(TargetModuleID.class);
          if (moduleInfo == null || moduleInfo.getModuleID() == null)
          {
-            log.log(Level.INFO, "Skipping undeploy since module ID could not be determined");
+            log.info("Skipping undeploy since module ID could not be determined");
             return;
          }
-         
+
          TargetModuleID[] availableModuleIDs = deploymentManager.getAvailableModules(
                moduleTypeMapper.getModuleType(archive), getDeploymentManager().getTargets());
          TargetModuleID moduleInfoMatch = null;

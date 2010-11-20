@@ -16,8 +16,6 @@
  */
 package org.jboss.arquillian.prototyping.context;
 
-import java.util.logging.Logger;
-
 import javax.ejb.EJBAccessException;
 import javax.inject.Inject;
 import javax.naming.Context;
@@ -30,6 +28,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.prototyping.context.api.Properties;
 import org.jboss.arquillian.prototyping.context.api.Property;
 import org.jboss.arquillian.prototyping.context.api.openejb.OpenEJBArquillianContext;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;

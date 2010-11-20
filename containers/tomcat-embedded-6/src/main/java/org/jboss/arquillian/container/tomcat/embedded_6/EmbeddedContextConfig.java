@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import javax.servlet.ServletContext;
+
 import org.apache.catalina.startup.Constants;
 import org.apache.catalina.startup.ContextConfig;
+import org.jboss.arquillian.spi.Logger;
 import org.xml.sax.InputSource;
 
 /**
@@ -38,6 +41,9 @@ import org.xml.sax.InputSource;
  */
 public class EmbeddedContextConfig extends ContextConfig
 {
+   // Provide logging
+   private static Logger log = Logger.getLogger(EmbeddedContextConfig.class);
+
    /**
     * Override as a hook to process the application context configuration.
     */
@@ -82,7 +88,7 @@ public class EmbeddedContextConfig extends ContextConfig
          catch (Exception e)
          {
             ok = false;
-            log.error("Parse error in context.xml for " + context.getName(), e);
+            log.severe("Parse error in context.xml for " + context.getName(), e);
          }
          finally
          {
@@ -96,11 +102,11 @@ public class EmbeddedContextConfig extends ContextConfig
             }
             catch (IOException e)
             {
-               log.error("Error closing context.xml for " + context.getName(), e);
+               log.severe("Error closing context.xml for " + context.getName(), e);
             }
          }
       }
-      log.debug("Done processing " + Constants.ApplicationContextXml + " descriptor");
+      log.fine("Done processing " + Constants.ApplicationContextXml + " descriptor");
    }
 
    /**

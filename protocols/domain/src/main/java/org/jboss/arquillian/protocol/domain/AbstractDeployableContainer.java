@@ -35,6 +35,7 @@ import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.as.standalone.client.api.StandaloneClient;
 import org.jboss.as.standalone.client.api.deployment.DeploymentAction;
 import org.jboss.as.standalone.client.api.deployment.DeploymentPlan;
@@ -42,7 +43,6 @@ import org.jboss.as.standalone.client.api.deployment.DeploymentPlanBuilder;
 import org.jboss.as.standalone.client.api.deployment.ServerDeploymentActionResult;
 import org.jboss.as.standalone.client.api.deployment.ServerDeploymentManager;
 import org.jboss.as.standalone.client.api.deployment.ServerDeploymentPlanResult;
-import org.jboss.logging.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 
@@ -79,7 +79,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       {
          if (jmxConnector == null)
          {
-            log.debug("Connecting JMXConnector to: " + urlString);
+            log.fine("Connecting JMXConnector to: " + urlString);
             JMXServiceURL serviceURL = new JMXServiceURL(urlString);
             jmxConnector = JMXConnectorFactory.connect(serviceURL, null);
          }
@@ -128,7 +128,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
          }
          catch (Exception ex)
          {
-            log.warn("Cannot undeploy: " + runtimeName, ex);
+            log.warning("Cannot undeploy: " + runtimeName, ex);
          }
       }
    }

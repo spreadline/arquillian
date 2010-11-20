@@ -17,6 +17,7 @@
 package org.jboss.arquillian.container.jsr88.remote_1_2;
 
 import java.io.File;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

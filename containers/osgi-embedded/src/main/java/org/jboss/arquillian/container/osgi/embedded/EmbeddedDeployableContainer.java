@@ -27,13 +27,13 @@ import javax.management.ObjectName;
 
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
-import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
 import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeploymentException;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.osgi.spi.framework.OSGiBootstrap;
 import org.jboss.osgi.spi.framework.OSGiBootstrapProvider;
 import org.jboss.shrinkwrap.api.Archive;
@@ -60,7 +60,7 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
 
    private void bootstrapFramework(Context context)
    {
-      log.debug("Bootstrap framework ...");
+      log.fine("Bootstrap framework ...");
       OSGiBootstrapProvider provider = OSGiBootstrap.getBootstrapProvider();
       framework = provider.getFramework();
       context.add(Framework.class, framework);
@@ -68,7 +68,7 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
 
    private void startFramework(Context context)
    {
-      log.debug("Start framework: " + framework);
+      log.fine("Start framework: " + framework);
       try
       {
          framework.start();
@@ -82,7 +82,7 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
 
    private void stopFramework()
    {
-      log.debug("Stop framework: " + framework);
+      log.fine("Stop framework: " + framework);
       try
       {
          framework.stop();

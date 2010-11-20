@@ -16,7 +16,7 @@
  */
 package org.jboss.arquillian.performance.event;
 
-import org.jboss.arquillian.performance.annotation.*;
+import org.jboss.arquillian.performance.annotation.PerformanceTest;
 import org.jboss.arquillian.performance.meta.PerformanceClassResult;
 import org.jboss.arquillian.performance.meta.PerformanceSuiteResult;
 import org.jboss.arquillian.spi.Context;

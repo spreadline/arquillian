@@ -34,7 +34,7 @@ import org.jboss.arquillian.spi.TestResult.Status;
 import org.jboss.arquillian.spi.TestRunner;
 import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.arquillian.spi.util.TestRunners;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * An MBean to run test methods in container.
@@ -59,7 +59,7 @@ public abstract class JMXTestRunner implements JMXTestRunnerMBean
       ObjectName objectName = getObjectName();
       StandardMBean mbean = new StandardMBean(this, JMXTestRunnerMBean.class);
       mbeanServer.registerMBean(mbean, objectName);
-      log.debug("JMXTestRunner registered: " + objectName);
+      log.fine("JMXTestRunner registered: " + objectName);
       return objectName;
    }
 
@@ -69,7 +69,7 @@ public abstract class JMXTestRunner implements JMXTestRunnerMBean
       if (mbeanServer.isRegistered(oname))
       {
          mbeanServer.unregisterMBean(oname);
-         log.debug("JMXTestRunner unregistered: " + oname);
+         log.fine("JMXTestRunner unregistered: " + oname);
       }
    }
 

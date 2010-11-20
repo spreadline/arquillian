@@ -20,12 +20,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.naming.InitialContext;
 
 import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestEnricher;
 
 /**

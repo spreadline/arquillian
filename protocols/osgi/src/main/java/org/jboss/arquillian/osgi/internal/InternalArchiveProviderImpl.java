@@ -27,7 +27,7 @@ import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.util.TCCLActions;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
@@ -55,7 +55,7 @@ public class InternalArchiveProviderImpl implements InternalArchiveProvider
       MBeanServer mbeanServer = MBeanServerLocator.findOrCreateMBeanServer();
       if (mbeanServer.isRegistered(objectName) == false)
       {
-         log.debug("Register: " + objectName);
+         log.fine("Register: " + objectName);
          StandardMBean mbean = new StandardMBean(this, InternalArchiveProvider.class);
          mbeanServer.registerMBean(mbean, objectName);
       }
@@ -68,12 +68,12 @@ public class InternalArchiveProviderImpl implements InternalArchiveProvider
       {
          try
          {
-            log.debug("Unregister: " + objectName);
+            log.fine("Unregister: " + objectName);
             mbeanServer.unregisterMBean(objectName);
          }
          catch (JMException ex)
          {
-            log.error("Cannot unregister: " + objectName);
+            log.severe("Cannot unregister: " + objectName);
          }
       }
    }

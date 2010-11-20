@@ -31,12 +31,12 @@ import javax.management.remote.JMXServiceURL;
 
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
-import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.osgi.spi.util.BundleInfo;
 import org.jboss.osgi.testing.OSGiTestHelper;
 import org.jboss.osgi.testing.internal.ManagementSupport;
@@ -151,7 +151,7 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       {
          Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
          if (cause instanceof InstanceNotFoundException == false)
-            log.warn("Cannot get state for bundle: " + this, cause);
+            log.warning("Cannot get state for bundle: " + this, cause);
 
          return Bundle.UNINSTALLED;
       }
@@ -220,7 +220,7 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       {
          if (jmxConnector == null)
          {
-            log.debug("Connecting JMXConnector to: " + urlString);
+            log.fine("Connecting JMXConnector to: " + urlString);
             JMXServiceURL serviceURL = new JMXServiceURL(urlString);
             jmxConnector = JMXConnectorFactory.connect(serviceURL, null);
          }

@@ -19,7 +19,6 @@ package org.jboss.arquillian.container.openwebbeans.embedded_1;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.jboss.arquillian.container.openwebbeans.embedded_1.OpenWebBeansSEContainer.ContainerInstanceHolder;
-
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.testenricher.cdi.CDIInjectionEnricher;
 

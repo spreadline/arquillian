@@ -23,7 +23,6 @@ import junit.framework.Assert;
 import org.jboss.arquillian.impl.context.ClassContext;
 import org.jboss.arquillian.impl.context.SuiteContext;
 import org.jboss.arquillian.impl.context.TestContext;
-import org.jboss.arquillian.impl.handler.TestEventExecuter;
 import org.jboss.arquillian.spi.ServiceLoader;
 import org.jboss.arquillian.spi.TestMethodExecutor;
 import org.jboss.arquillian.spi.TestResult;

@@ -17,11 +17,9 @@
 package org.jboss.arquillian.protocol.servlet_3;
 
 import java.util.ArrayList;
-
 import java.util.Collection;
 import java.util.List;
 
-import org.jboss.arquillian.protocol.servlet_3.ServletProtocolDeploymentPackager;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;

@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.arquillian.spi.TestResult;
-import org.jboss.arquillian.spi.TestRunner;
 import org.jboss.arquillian.spi.TestResult.Status;
+import org.jboss.arquillian.spi.TestRunner;
 import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.arquillian.spi.util.TestRunners;
 

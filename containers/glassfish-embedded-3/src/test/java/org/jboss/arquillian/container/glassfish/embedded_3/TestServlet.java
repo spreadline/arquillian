@@ -17,8 +17,8 @@
 package org.jboss.arquillian.container.glassfish.embedded_3;
 
 import java.io.IOException;
-import javax.annotation.Resource;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

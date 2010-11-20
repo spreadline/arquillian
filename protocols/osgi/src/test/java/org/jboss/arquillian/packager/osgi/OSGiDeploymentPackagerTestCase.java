@@ -22,14 +22,14 @@ import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.jboss.osgi.testing.OSGiManifestBuilder;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.arquillian.osgi.internal.OSGiDeploymentPackager;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;
+import org.jboss.osgi.testing.OSGiManifestBuilder;
+import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.mockito.Mockito;

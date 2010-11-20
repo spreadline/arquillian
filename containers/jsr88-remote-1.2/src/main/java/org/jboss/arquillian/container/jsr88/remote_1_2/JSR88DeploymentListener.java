@@ -16,14 +16,14 @@
  */
 package org.jboss.arquillian.container.jsr88.remote_1_2;
 
-import java.util.logging.Logger;
-
 import javax.enterprise.deploy.shared.CommandType;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.DeploymentStatus;
 import javax.enterprise.deploy.spi.status.ProgressEvent;
 import javax.enterprise.deploy.spi.status.ProgressListener;
 import javax.enterprise.deploy.spi.status.ProgressObject;
+
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * Listens for JSR 88 deployment events to update the deployed state

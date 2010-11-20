@@ -17,7 +17,6 @@
 package org.jboss.arquillian.container.jetty.embedded_6_1;
 
 import java.sql.Connection;
-import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -25,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

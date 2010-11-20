@@ -34,7 +34,7 @@ import javax.management.remote.rmi.RMIConnectorServer;
 import javax.management.remote.rmi.RMIJRMPServerImpl;
 import javax.management.remote.rmi.RMIServerImpl;
 
-import org.jboss.logging.Logger;
+import org.jboss.arquillian.spi.Logger;
 
 /**
  * A RMI/JRMP connector service.
@@ -63,11 +63,11 @@ public class JMXConnectorServerExt
       try
       {
          rmiRegistry.list();
-         log.debug("RMI registry running at host=" + host + ",port=" + regPort);
+         log.fine("RMI registry running at host=" + host + ",port=" + regPort);
       }
       catch (Exception ex)
       {
-         log.debug("No RMI registry running at host=" + host + ",port=" + regPort + ".  Will create one.");
+         log.fine("No RMI registry running at host=" + host + ",port=" + regPort + ".  Will create one.");
          rmiRegistry = LocateRegistry.createRegistry(regPort, null, new DefaultSocketFactory(InetAddress.getByName(host)));
          shutdownRegistry = true;
       }
@@ -82,11 +82,11 @@ public class JMXConnectorServerExt
       RMIServerSocketFactory serverSocketFactory = new DefaultSocketFactory(InetAddress.getByName(rmiHost));
       RMIServerImpl rmiServer = new RMIJRMPServerImpl(rmiPort, null, serverSocketFactory, null);
       connectorServer = new RMIConnectorServer(serviceURL, null, rmiServer, mbeanServer);
-      log.debug("JMXConnectorServer created: " + serviceURL);
+      log.fine("JMXConnectorServer created: " + serviceURL);
 
       connectorServer.start();
       rmiRegistry.rebind("jmxrmi", rmiServer.toStub());
-      log.debug("JMXConnectorServer started: " + serviceURL);
+      log.fine("JMXConnectorServer started: " + serviceURL);
    }
 
    public void stop()
@@ -102,15 +102,15 @@ public class JMXConnectorServerExt
          // Shutdown the registry if this service created it
          if (shutdownRegistry == true)
          {
-            log.debug("Shutdown RMI registry");
+            log.fine("Shutdown RMI registry");
             UnicastRemoteObject.unexportObject(rmiRegistry, true);
          }
 
-         log.debug("JMXConnectorServer stopped");
+         log.fine("JMXConnectorServer stopped");
       }
       catch (Exception ex)
       {
-         log.warn("Cannot stop JMXConnectorServer", ex);
+         log.warning("Cannot stop JMXConnectorServer", ex);
       }
    }
 }

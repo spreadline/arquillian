@@ -16,10 +16,10 @@
  */
 package org.jboss.arquillian.container.jsr88.remote_1_2;
 
-import javax.enterprise.deploy.shared.ModuleType;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 
-import org.jboss.arquillian.container.jsr88.remote_1_2.JSR88ModuleTypeMapper;
+import javax.enterprise.deploy.shared.ModuleType;
+
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
