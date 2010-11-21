@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jbossas.embedded_7;
+package org.jboss.arquillian.container.jbossas.managed_7;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -24,7 +24,7 @@ import java.net.URL;
 import javax.inject.Inject;
 
 import org.jboss.arquillian.api.Deployment;
-import org.jboss.arquillian.container.jbossas.embedded_7.SimpleServiceActivator.SimpleService;
+import org.jboss.arquillian.container.jbossas.managed_7.SimpleServiceActivator.SimpleService;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.msc.service.ServiceActivator;

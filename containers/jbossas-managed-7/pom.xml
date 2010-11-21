@@ -15,9 +15,9 @@
   <!-- Artifact Configuration -->
 
   <groupId>org.jboss.arquillian.container</groupId>
-  <artifactId>arquillian-jbossas-embedded-7</artifactId>
-  <name>Arquillian Container JBoss AS Embedded 7.x</name>
-  <description>JBoss AS Embedded 7.x Container integration for the Arquillian Project</description>
+  <artifactId>arquillian-jbossas-managed-7</artifactId>
+  <name>Arquillian Container JBoss AS Managed 7.x</name>
+  <description>JBoss AS Managed 7.x Container integration for the Arquillian Project</description>
 
 
   <!-- Properties -->
