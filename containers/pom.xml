@@ -26,6 +26,7 @@
     <module>glassfish-remote-3</module>
     <module>glassfish-embedded-3</module>
     <!-- module>jbossas-embedded-6</module -->
+    <module>jbossas-embedded-7</module>
     <module>jbossas-managed-5.1</module>
     <module>jbossas-managed-6</module>
     <module>jbossas-managed-7</module>
