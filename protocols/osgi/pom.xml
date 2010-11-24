@@ -39,7 +39,7 @@
     <!-- org.jboss.osgi -->
     <dependency>
       <groupId>org.jboss.osgi.spi</groupId>
-      <artifactId>jboss-osgi-spi</artifactId>
+      <artifactId>jbosgi-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

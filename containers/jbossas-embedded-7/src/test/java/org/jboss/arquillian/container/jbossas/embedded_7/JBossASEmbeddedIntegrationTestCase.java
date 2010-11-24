@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.container.jbossas.embedded_7.SimpleServiceActivator.SimpleService;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.msc.service.ServiceActivator;
 import org.jboss.msc.service.ServiceContainer;
 import org.jboss.msc.service.ServiceController;
@@ -44,8 +43,6 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class JBossASEmbeddedIntegrationTestCase
 {
-   final static Logger log = Logger.getLogger(JBossASEmbeddedIntegrationTestCase.class);
-
    @Inject
    public ServiceContainer container;
 

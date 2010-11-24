@@ -224,7 +224,7 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.osgi.spi</groupId>
-        <artifactId>jboss-osgi-spi</artifactId>
+        <artifactId>jbosgi-spi</artifactId>
         <version>${version.jboss_osgi_spi}</version>
       </dependency>
       <dependency>
