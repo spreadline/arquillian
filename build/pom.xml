@@ -16,7 +16,7 @@
   <!-- Artifact Configuration -->
   <groupId>org.jboss.arquillian</groupId>
   <artifactId>arquillian-build</artifactId>
-  <version>1.0.0.AS7-SNAPSHOT</version>
+  <version>1.0.0.Alpha4.SP4-SNAPSHOT</version>
   <name>Arquillian Build</name>
   <description>Arquillian Build Configuration</description>
   <packaging>pom</packaging>
@@ -33,7 +33,7 @@
     <version.jboss_embedded>1.0.0-alpha-1</version.jboss_embedded>
     <version.jboss_logging>3.0.0.Beta3</version.jboss_logging>
     <version.jboss_logmanager>1.2.0.CR7</version.jboss_logmanager>
-    <version.jboss_osgi_spi>1.0.18</version.jboss_osgi_spi>
+    <version.jboss_osgi_spi>1.0.19-SNAPSHOT</version.jboss_osgi_spi>
     <version.jboss_osgi_vfs>1.0.4</version.jboss_osgi_vfs>
     <version.jetty_jetty>6.1.9</version.jetty_jetty>
     <version.junit_junit>4.8.1</version.junit_junit>
