@@ -47,14 +47,7 @@ public class JMXTestRunnerTestCase
    public void testJMXTestRunner() throws Throwable
    {
       MBeanServer mbeanServer = getMBeanServer();
-      JMXTestRunner jmxTestRunner = new JMXTestRunner()
-      {
-         @Override
-         protected ObjectName getObjectName()
-         {
-            return JMXTestRunnerMBean.OBJECT_NAME;
-         }
-      };
+      JMXTestRunner jmxTestRunner = new JMXTestRunner();
       jmxTestRunner.registerMBean(mbeanServer);
 
       try

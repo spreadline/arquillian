@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 import javax.management.remote.JMXConnector;
@@ -32,7 +31,6 @@ import javax.management.remote.JMXServiceURL;
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
-import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.LifecycleException;
@@ -83,9 +81,8 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
    @Override
    public ContainerMethodExecutor getContainerMethodExecutor()
    {
-      ObjectName objectName = TestRunnerNameFactory.getObjectName("osgi");
       MBeanServerConnection mbeanServer = getMBeanServerConnection();
-      return new JMXMethodExecutor(mbeanServer, ExecutionType.REMOTE, objectName);
+      return new JMXMethodExecutor(mbeanServer, ExecutionType.REMOTE);
    }
 
    @Override

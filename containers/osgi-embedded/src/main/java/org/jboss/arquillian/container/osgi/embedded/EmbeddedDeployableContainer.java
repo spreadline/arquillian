@@ -23,13 +23,11 @@ import java.io.InputStream;
 import java.net.URL;
 
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
 import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
-import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeploymentException;
@@ -127,9 +125,8 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
    @Override
    public ContainerMethodExecutor getContainerMethodExecutor()
    {
-      ObjectName objectName = TestRunnerNameFactory.getObjectName("osgi");
       MBeanServer mbeanServer = MBeanServerLocator.findOrCreateMBeanServer();
-      return new JMXMethodExecutor(mbeanServer, ExecutionType.EMBEDDED, objectName);
+      return new JMXMethodExecutor(mbeanServer, ExecutionType.EMBEDDED);
    }
 
    @Override

@@ -40,7 +40,6 @@ public class JMXMethodExecutor implements ContainerMethodExecutor
 {
    private final MBeanServerConnection mbeanServer;
    private final ExecutionType executionType;
-   private final ObjectName testRunnerName;
    private final Map<String, String> props;
 
    public enum ExecutionType
@@ -48,11 +47,10 @@ public class JMXMethodExecutor implements ContainerMethodExecutor
       EMBEDDED, REMOTE
    }
 
-   public JMXMethodExecutor(MBeanServerConnection connection, ExecutionType executionType, ObjectName testRunnerName)
+   public JMXMethodExecutor(MBeanServerConnection connection, ExecutionType executionType)
    {
       this.mbeanServer = connection;
       this.executionType = executionType;
-      this.testRunnerName = testRunnerName;
       this.props = new HashMap<String, String>();
       props.put(ExecutionType.class.getName(), executionType.toString());
    }
@@ -69,7 +67,7 @@ public class JMXMethodExecutor implements ContainerMethodExecutor
       TestResult result = null;
       try
       {
-         JMXTestRunnerMBean testRunner = getMBeanProxy(testRunnerName, JMXTestRunnerMBean.class);
+         JMXTestRunnerMBean testRunner = getMBeanProxy(JMXTestRunnerMBean.OBJECT_NAME, JMXTestRunnerMBean.class);
 
          if (executionType == ExecutionType.EMBEDDED)
          {

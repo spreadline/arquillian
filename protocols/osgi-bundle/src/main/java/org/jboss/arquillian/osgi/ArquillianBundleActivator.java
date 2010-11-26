@@ -27,10 +27,9 @@ import javax.management.StandardMBean;
 
 import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunner.TestClassLoader;
-import org.jboss.arquillian.protocol.jmx.TestRunnerNameFactory;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.testenricher.osgi.BundleContextHolder;
 import org.jboss.arquillian.testenricher.osgi.OSGiTestEnricher;
-import org.jboss.arquillian.spi.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -73,12 +72,6 @@ public class ArquillianBundleActivator implements BundleActivator
       MBeanServer mbeanServer = getMBeanServer(context);
       testRunner = new JMXTestRunner()
       {
-         @Override
-         protected ObjectName getObjectName()
-         {
-            return TestRunnerNameFactory.getObjectName("osgi");
-         }
-
          @Override
          protected TestClassLoader getTestClassLoader()
          {

@@ -25,16 +25,15 @@ import java.util.Map;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestResult.Status;
 import org.jboss.arquillian.spi.TestRunner;
 import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.arquillian.spi.util.TestRunners;
-import org.jboss.arquillian.spi.Logger;
 
 /**
  * An MBean to run test methods in container.
@@ -42,7 +41,7 @@ import org.jboss.arquillian.spi.Logger;
  * @author thomas.diesler@jboss.com
  * @since 06-Sep-2010
  */
-public abstract class JMXTestRunner implements JMXTestRunnerMBean
+public class JMXTestRunner implements JMXTestRunnerMBean
 {
    // Provide logging
    private static Logger log = Logger.getLogger(JMXTestRunner.class);
@@ -54,26 +53,21 @@ public abstract class JMXTestRunner implements JMXTestRunnerMBean
       ClassLoader getServiceClassLoader();
    }
 
-   public ObjectName registerMBean(MBeanServer mbeanServer) throws JMException
+   public void registerMBean(MBeanServer mbeanServer) throws JMException
    {
-      ObjectName objectName = getObjectName();
       StandardMBean mbean = new StandardMBean(this, JMXTestRunnerMBean.class);
-      mbeanServer.registerMBean(mbean, objectName);
-      log.fine("JMXTestRunner registered: " + objectName);
-      return objectName;
+      mbeanServer.registerMBean(mbean, OBJECT_NAME);
+      log.fine("JMXTestRunner registered: " + OBJECT_NAME);
    }
 
    public void unregisterMBean(MBeanServer mbeanServer) throws JMException
    {
-      ObjectName oname = getObjectName();
-      if (mbeanServer.isRegistered(oname))
+      if (mbeanServer.isRegistered(OBJECT_NAME))
       {
-         mbeanServer.unregisterMBean(oname);
-         log.fine("JMXTestRunner unregistered: " + oname);
+         mbeanServer.unregisterMBean(OBJECT_NAME);
+         log.fine("JMXTestRunner unregistered: " + OBJECT_NAME);
       }
    }
-
-   protected abstract ObjectName getObjectName();
 
    protected TestClassLoader getTestClassLoader()
    {
