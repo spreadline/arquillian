@@ -30,13 +30,14 @@ import javax.management.ObjectName;
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.osgi.internal.EmbeddedOSGiContainer;
 import org.jboss.arquillian.osgi.internal.RemoteOSGiContainer;
-import org.jboss.arquillian.protocol.jmx.ExecutionTypeAssociation;
+import org.jboss.arquillian.protocol.jmx.ExecutionTypeAssociationAndCallbackHandler;
 import org.jboss.arquillian.protocol.jmx.ExecutionTypeInjector;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
 import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestEnricher;
-import org.jboss.arquillian.spi.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -76,7 +77,7 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
    {
       // Get the ExecutionType associated with the thread.
       // [TODO] Remove this hack when it becomes possible to pass data to the enrichers
-      inject(ExecutionTypeAssociation.getExecutionType());
+      inject(ExecutionTypeAssociationAndCallbackHandler.getExecutionType());
 
       Class<? extends Object> testClass = testCase.getClass();
       for (Field field : testClass.getDeclaredFields())
@@ -145,12 +146,13 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
    private OSGiContainer getOSGiContainer(Context context, TestClass testClass)
    {
       BundleContext bundleContext = getBundleContext(context);
+      ResourceCallbackHandler callbackHandler = ExecutionTypeAssociationAndCallbackHandler.getCallbackHandler();
 
       OSGiContainer result = null;
       if (executionType == ExecutionType.EMBEDDED)
-         result =  new EmbeddedOSGiContainer(bundleContext, testClass);
+         result = new EmbeddedOSGiContainer(bundleContext, testClass, callbackHandler);
       else if (executionType == ExecutionType.REMOTE)
-         result = new RemoteOSGiContainer(bundleContext, testClass);
+         result = new RemoteOSGiContainer(bundleContext, testClass, callbackHandler);
 
       return result;
    }

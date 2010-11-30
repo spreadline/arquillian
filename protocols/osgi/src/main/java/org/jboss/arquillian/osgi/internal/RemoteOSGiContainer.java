@@ -32,8 +32,9 @@ import javax.management.remote.JMXServiceURL;
 import javax.naming.Context;
 
 import org.jboss.arquillian.osgi.OSGiContainer;
-import org.jboss.arquillian.spi.TestClass;
+import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
 import org.jboss.arquillian.spi.Logger;
+import org.jboss.arquillian.spi.TestClass;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -49,9 +50,9 @@ public class RemoteOSGiContainer extends AbstractOSGiContainer
 
    private JMXConnector jmxConnector;
 
-   public RemoteOSGiContainer(BundleContext context, TestClass testClass)
+   public RemoteOSGiContainer(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
    {
-      super(context, testClass);
+      super(context, testClass, callbackHandler);
    }
 
    @Override

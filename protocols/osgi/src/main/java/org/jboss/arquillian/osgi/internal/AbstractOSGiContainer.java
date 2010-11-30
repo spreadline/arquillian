@@ -18,18 +18,15 @@ package org.jboss.arquillian.osgi.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.ZipInputStream;
 
 import javax.management.MBeanServerConnection;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
+import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.osgi.spi.util.BundleInfo;
@@ -47,30 +44,20 @@ import org.osgi.framework.Version;
  * An abstract {@link OSGiContainer}
  *
  * @author thomas.diesler@jboss.com
+ * @author <a href="david@redhat.com">David Bosschaert</a>
  * @since 07-Sep-2010
  */
 public abstract class AbstractOSGiContainer implements OSGiContainer
 {
    private BundleContext context;
    private TestClass testClass;
+   private ResourceCallbackHandler callbackHandler;
 
-   protected AbstractOSGiContainer(BundleContext context, TestClass testClass)
+   protected AbstractOSGiContainer(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
    {
       this.context = context;
       this.testClass = testClass;
-   }
-
-   public static ObjectName getArchiveProviderName(TestClass testClass)
-   {
-      String name = InternalArchiveProvider.ONAME_PREFIX + testClass.getSimpleName();
-      try
-      {
-         return new ObjectName(name);
-      }
-      catch (MalformedObjectNameException e)
-      {
-         throw new IllegalArgumentException("Invalid object name: " + name);
-      }
+      this.callbackHandler = callbackHandler;
    }
 
    protected BundleContext getBundleContext()
@@ -163,24 +150,15 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
    {
       try
       {
-         MBeanServerConnection mbeanServer = getMBeanServerConnection();
-         ObjectName providerName = getArchiveProviderName(testClass);
-         if (mbeanServer.isRegistered(providerName) == false)
-            throw new IllegalStateException("ArchiveProvider not registered: " + providerName);
-
-         InternalArchiveProvider proxy = getMBeanProxy(mbeanServer, providerName, InternalArchiveProvider.class);
-         return new ByteArrayInputStream(proxy.getTestArchive(name));
+         byte[] bytes = callbackHandler.requestResource(testClass, name);
+         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+         return bais;
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
          throw new IllegalStateException("Cannot obtain test archive: " + name, ex);
       }
    }
 
    public abstract MBeanServerConnection getMBeanServerConnection();
-
-   private <T> T getMBeanProxy(MBeanServerConnection mbeanServer, ObjectName name, Class<T> interf)
-   {
-      return (T)MBeanServerInvocationHandler.newProxyInstance(mbeanServer, name, interf, false);
-   }
 }

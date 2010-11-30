@@ -29,9 +29,9 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
+import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -40,6 +40,7 @@ import org.osgi.framework.BundleException;
  * An abstract OSGi {@link DeployableContainer}
  *
  * @author thomas.diesler@jboss.com
+ * @author <a href="david@redhat.com">David Bosschaert</a>
  * @version $Revision: $
  */
 public abstract class AbstractDeployableContainer implements DeployableContainer
@@ -123,7 +124,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       // Unregister ArchiveProvider
       InternalArchiveProvider archiveProvider = context.get(InternalArchiveProvider.class);
       if (archiveProvider != null)
-         archiveProvider.unregisterMBean();
+         archiveProvider.destroy();
 
       BundleList bundleList = context.get(BundleList.class);
       uninstallBundleList(bundleList);
@@ -191,6 +192,8 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
    }
 
+   public abstract InternalArchiveProvider createInternalArchiveProvider(TestClass testClass, ArchiveProvider archiveProvider);
+
    public abstract ContainerMethodExecutor getContainerMethodExecutor();
 
    public abstract BundleHandle installBundle(Archive<?> archive) throws BundleException, IOException;
@@ -237,9 +240,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
             try
             {
                ArchiveProvider archiveProvider = (ArchiveProvider)innerClass.newInstance();
-               InternalArchiveProvider mbean = new InternalArchiveProviderImpl(testClass, archiveProvider);
-               mbean.registerMBean();
-               return mbean;
+               return createInternalArchiveProvider(testClass, archiveProvider);
             }
             catch (Exception ex)
             {
@@ -249,7 +250,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
       return null;
    }
-
+   
    public static class BundleHandle
    {
       private long bundleId;

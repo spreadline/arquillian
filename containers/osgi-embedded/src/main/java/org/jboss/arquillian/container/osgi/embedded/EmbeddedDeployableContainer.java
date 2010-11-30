@@ -24,14 +24,19 @@ import java.net.URL;
 
 import javax.management.MBeanServer;
 
+import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
+import org.jboss.arquillian.osgi.internal.InternalArchiveProvider;
+import org.jboss.arquillian.osgi.internal.MBeanNotificationArchiveProvider;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.Logger;
+import org.jboss.arquillian.spi.TestClass;
 import org.jboss.osgi.spi.framework.OSGiBootstrap;
 import org.jboss.osgi.spi.framework.OSGiBootstrapProvider;
 import org.jboss.shrinkwrap.api.Archive;
@@ -47,6 +52,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * The embedded OSGi container.
  *
  * @author thomas.diesler@jboss.com
+ * @author <a href="david@redhat.com">David Bosschaert</a>
  * @version $Revision: $
  */
 public class EmbeddedDeployableContainer extends AbstractDeployableContainer
@@ -211,5 +217,12 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
       BundleContext sysContext = framework.getBundleContext();
       Bundle bundle = sysContext.getBundle(handle.getBundleId());
       return bundle;
+   }
+
+   @Override
+   public InternalArchiveProvider createInternalArchiveProvider(TestClass testClass, ArchiveProvider archiveProvider)
+   {
+      MBeanServer mBeanServer = MBeanServerLocator.findOrCreateMBeanServer();
+      return new MBeanNotificationArchiveProvider(mBeanServer, JMXTestRunnerMBean.OBJECT_NAME, archiveProvider);
    }
 }

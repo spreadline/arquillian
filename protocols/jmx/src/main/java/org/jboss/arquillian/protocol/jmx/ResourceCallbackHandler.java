@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.osgi.internal;
+package org.jboss.arquillian.protocol.jmx;
+
+import org.jboss.arquillian.spi.TestClass;
 
 /**
- * The archiveprovider monitors the remote test and reacts to requests for archives.
- * 
- * @author thomas.diesler@jboss.com
  * @author <a href="david@redhat.com">David Bosschaert</a>
- * @since 06-Sep-2010
  */
-public interface InternalArchiveProvider
+public interface ResourceCallbackHandler
 {
-   void destroy();
+   /**
+    * Request a resource from the test client. This could either be a local test client as 
+    * well as a remote test client.
+    * @param testClass The test class that is requesting the resource.
+    * @param resourceName The name of the resource
+    * @return The resource bytes. 
+    */
+   byte[] requestResource(TestClass testClass, String resourceName) throws Exception;
 }

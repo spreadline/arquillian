@@ -20,6 +20,7 @@ import javax.management.MBeanServerConnection;
 
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
+import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
 import org.jboss.arquillian.spi.TestClass;
 import org.osgi.framework.BundleContext;
 
@@ -31,9 +32,9 @@ import org.osgi.framework.BundleContext;
  */
 public class EmbeddedOSGiContainer extends AbstractOSGiContainer
 {
-   public EmbeddedOSGiContainer(BundleContext context, TestClass testClass)
+   public EmbeddedOSGiContainer(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
    {
-      super(context, testClass);
+      super(context, testClass, callbackHandler);
    }
 
    @Override

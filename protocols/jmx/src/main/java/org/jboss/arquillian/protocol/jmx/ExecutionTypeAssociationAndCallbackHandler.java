@@ -22,11 +22,13 @@ import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
  * A thread loacl {@link ExecutionType} association
  *
  * @author thomas.diesler@jboss.com
+ * @author <a href="david@redhat.com">David Bosschaert</a>
  * @since 18-Nov-2010
  */
-public final class ExecutionTypeAssociation
+public final class ExecutionTypeAssociationAndCallbackHandler
 {
    private static ThreadLocal<ExecutionType> association = new ThreadLocal<ExecutionType>();
+   private static ThreadLocal<ResourceCallbackHandler> callback = new ThreadLocal<ResourceCallbackHandler>();
 
    public static ExecutionType getExecutionType()
    {
@@ -36,5 +38,15 @@ public final class ExecutionTypeAssociation
    public static void setExecutionType(ExecutionType type)
    {
       association.set(type);
+   }
+
+   public static ResourceCallbackHandler getCallbackHandler()
+   {
+      return callback.get();
+   }
+
+   public static void setCallbackHandler(ResourceCallbackHandler handler)
+   {
+      callback.set(handler);
    }
 }

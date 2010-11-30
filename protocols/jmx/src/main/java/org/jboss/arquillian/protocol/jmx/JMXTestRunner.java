@@ -17,18 +17,25 @@
 package org.jboss.arquillian.protocol.jmx;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.JMException;
+import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanServer;
-import javax.management.StandardMBean;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.StandardEmitterMBean;
 
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.jboss.arquillian.protocol.jmx.RequestedCommand.Command;
 import org.jboss.arquillian.spi.Logger;
+import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestResult.Status;
 import org.jboss.arquillian.spi.TestRunner;
@@ -39,12 +46,18 @@ import org.jboss.arquillian.spi.util.TestRunners;
  * An MBean to run test methods in container.
  *
  * @author thomas.diesler@jboss.com
+ * @author <a href="david@redhat.com">David Bosschaert</a>
  * @since 06-Sep-2010
  */
-public class JMXTestRunner implements JMXTestRunnerMBean
+public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandler
 {
    // Provide logging
    private static Logger log = Logger.getLogger(JMXTestRunner.class);
+
+   public static final String REQUEST_COMMAND = "org.jboss.arquillian.protocol.jmx.request_command";
+
+   private StandardEmitterMBean mbean;
+   private final Map<Long, BlockingQueue<byte[]>> results = new ConcurrentHashMap<Long, BlockingQueue<byte[]>>();
 
    public interface TestClassLoader
    {
@@ -55,8 +68,15 @@ public class JMXTestRunner implements JMXTestRunnerMBean
 
    public void registerMBean(MBeanServer mbeanServer) throws JMException
    {
-      StandardMBean mbean = new StandardMBean(this, JMXTestRunnerMBean.class);
+      String[] types = { REQUEST_COMMAND };
+      MBeanNotificationInfo info = new MBeanNotificationInfo(types,
+            Notification.class.getName(),
+            "A command request event has been emitted by this mbean");
+      NotificationBroadcasterSupport emitter = new NotificationBroadcasterSupport(info);
+
+      mbean = new StandardEmitterMBean(this, JMXTestRunnerMBean.class, emitter);
       mbeanServer.registerMBean(mbean, OBJECT_NAME);
+
       log.fine("JMXTestRunner registered: " + OBJECT_NAME);
    }
 
@@ -99,12 +119,7 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       // Marshall the TestResult
       try
       {
-         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         ObjectOutputStream oos = new ObjectOutputStream(baos);
-         oos.writeObject(result);
-         oos.close();
-
-         return new ByteArrayInputStream(baos.toByteArray());
+         return new ByteArrayInputStream(Utils.serialize(result));
       }
       catch (IOException ex)
       {
@@ -119,7 +134,9 @@ public class JMXTestRunner implements JMXTestRunnerMBean
          // Associate the ExecutionType with the thread.
          // [TODO] Remove this hack when it becomes possible to pass data to the enrichers
          ExecutionType executionType = ExecutionType.valueOf(props.get(ExecutionType.class.getName()));
-         ExecutionTypeAssociation.setExecutionType(executionType);
+         ExecutionTypeAssociationAndCallbackHandler.setExecutionType(executionType);
+         // [TODO] hijacked this type to pass through the ResourceCallbackHandler as well...
+         ExecutionTypeAssociationAndCallbackHandler.setCallbackHandler(this);
 
          // Get the TestRunner
          ClassLoader serviceClassLoader = getTestClassLoader().getServiceClassLoader();
@@ -142,5 +159,46 @@ public class JMXTestRunner implements JMXTestRunnerMBean
       {
          return new TestResult(Status.FAILED, th);
       }
+   }
+
+   @Override
+   public byte[] requestResource(TestClass testClass, String resourceName) throws Exception
+   {
+      // Create a command that describes the request.
+      RequestedCommand command = new RequestedCommand(testClass.getName(), Command.RESOURCE, resourceName);
+
+      try
+      {
+         // The command is asynchronously executed by the test client as it receives the notification, 
+         // the result will be stored in a blocking queue once its available.
+         BlockingQueue<byte[]> result = new ArrayBlockingQueue<byte[]>(1);
+         results.put(command.getId(), result);
+
+         // Inform the test client of the request by sending a JMX notification
+         Notification n = new Notification(REQUEST_COMMAND, mbean, command.getId(), "A command request for " + resourceName);
+         n.setUserData(Utils.serialize(command));
+         mbean.sendNotification(n);
+         
+         log.fine("Sent JMX notification for command request: " + command);
+
+         // Wait for the result to appear in the result queue.
+         return result.poll(1, TimeUnit.MINUTES);
+      }
+      finally
+      {
+         // Remove the command from the results map
+         results.remove(command.getId());
+      }
+   }
+
+   @Override
+   public void commandResult(long commandId, byte[] result)
+   {
+      log.fine("Received result for command request with ID: " + commandId);
+
+      // Find the associated blocking queue to put the result on.
+      BlockingQueue<byte[]> resultBQ = results.get(commandId);
+      if (resultBQ != null)
+         resultBQ.offer(result);
    }
 }

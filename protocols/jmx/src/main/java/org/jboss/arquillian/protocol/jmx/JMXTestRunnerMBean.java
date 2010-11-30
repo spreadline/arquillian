@@ -27,6 +27,7 @@ import org.jboss.arquillian.spi.TestResult;
  * An MBean to run test methods in container.
  *
  * @author thomas.diesler@jboss.com
+ * @author <a href="david@redhat.com">David Bosschaert</a>
  * @version $Revision: $
  */
 public interface JMXTestRunnerMBean
@@ -52,4 +53,13 @@ public interface JMXTestRunnerMBean
     * @return the {@link TestResult}
     */
    TestResult runTestMethod(String className, String methodName, Map<String, String> props);
+
+   /** 
+    * Called back by the client when a command is performed, the client receives the command
+    * via JMX Notifications that is should subscribe to.
+    *  
+    * @param commandId The ID of the command that was executed
+    * @param result The result data
+    */
+   void commandResult(long commandId, byte[] result);
 }
