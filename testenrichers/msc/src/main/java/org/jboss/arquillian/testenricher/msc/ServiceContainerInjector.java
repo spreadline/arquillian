@@ -14,20 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.testenricher.osgi;
+package org.jboss.arquillian.testenricher.msc;
 
-import org.osgi.framework.BundleContext;
+import org.jboss.msc.inject.Injector;
+import org.jboss.msc.service.ServiceContainer;
 
 /**
- * BundleContextHolder
- * 
+ * An injector for the {@link ServiceContainer}
+ *
  * @author thomas.diesler@jboss.com
- * @version $Revision: $
+ * @since 18-Nov-2010
  */
-public interface BundleContextHolder
+public interface ServiceContainerInjector extends Injector<ServiceContainer>
 {
-   /** The ObjectName for this service: jboss.arquillian:service=bundle-context */
-   String OBJECT_NAME = "jboss.arquillian:service=bundle-context";
-   
-   BundleContext getBundleContext();
 }

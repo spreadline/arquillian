@@ -32,7 +32,6 @@ import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.StandardEmitterMBean;
 
-import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
 import org.jboss.arquillian.protocol.jmx.RequestedCommand.Command;
 import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
@@ -133,10 +132,7 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
       {
          // Associate the ExecutionType with the thread.
          // [TODO] Remove this hack when it becomes possible to pass data to the enrichers
-         ExecutionType executionType = ExecutionType.valueOf(props.get(ExecutionType.class.getName()));
-         ExecutionTypeAssociationAndCallbackHandler.setExecutionType(executionType);
-         // [TODO] hijacked this type to pass through the ResourceCallbackHandler as well...
-         ExecutionTypeAssociationAndCallbackHandler.setCallbackHandler(this);
+         ResourceCallbackHandlerAssociation.setCallbackHandler(this);
 
          // Get the TestRunner
          ClassLoader serviceClassLoader = getTestClassLoader().getServiceClassLoader();
@@ -169,7 +165,7 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
 
       try
       {
-         // The command is asynchronously executed by the test client as it receives the notification, 
+         // The command is asynchronously executed by the test client as it receives the notification,
          // the result will be stored in a blocking queue once its available.
          BlockingQueue<byte[]> result = new ArrayBlockingQueue<byte[]>(1);
          results.put(command.getId(), result);
@@ -178,7 +174,7 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
          Notification n = new Notification(REQUEST_COMMAND, mbean, command.getId(), "A command request for " + resourceName);
          n.setUserData(Utils.serialize(command));
          mbean.sendNotification(n);
-         
+
          log.fine("Sent JMX notification for command request: " + command);
 
          // Wait for the result to appear in the result queue.

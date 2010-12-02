@@ -18,30 +18,17 @@ package org.jboss.arquillian.testenricher.osgi;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 import javax.inject.Inject;
-import javax.management.JMException;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.ObjectName;
 
 import org.jboss.arquillian.osgi.OSGiContainer;
-import org.jboss.arquillian.osgi.internal.EmbeddedOSGiContainer;
-import org.jboss.arquillian.osgi.internal.RemoteOSGiContainer;
-import org.jboss.arquillian.protocol.jmx.ExecutionTypeAssociationAndCallbackHandler;
-import org.jboss.arquillian.protocol.jmx.ExecutionTypeInjector;
-import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
 import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
+import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandlerAssociation;
 import org.jboss.arquillian.spi.Context;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestEnricher;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * The OSGi TestEnricher
@@ -57,29 +44,37 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * </code></pre>
  *
  * @author thomas.diesler@jboss.com
- * @version $Revision: $
  */
-public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
+public class OSGiTestEnricher implements TestEnricher, BundleContextInjector, BundleInjector
 {
-   // Provide logging
-   private static Logger log = Logger.getLogger(OSGiTestEnricher.class);
-
-   private ExecutionType executionType;
+   private BundleContext bundleContext;
+   private Bundle bundle;
 
    @Override
-   public void inject(ExecutionType value)
+   public void inject(Bundle value)
    {
-      executionType = value;
+      bundle = value;
+   }
+
+   @Override
+   public void inject(BundleContext value)
+   {
+      bundleContext = value;
    }
 
    @Override
    public void enrich(Context context, Object testCase)
    {
-      // Get the ExecutionType associated with the thread.
-      // [TODO] Remove this hack when it becomes possible to pass data to the enrichers
-      inject(ExecutionTypeAssociationAndCallbackHandler.getExecutionType());
+      // [TODO] Remove these hacks when it becomes possible to pass data to the enrichers
+      inject(BundleContextAssociation.getBundleContext());
+      inject(BundleAssociation.getBundle());
 
-      Class<? extends Object> testClass = testCase.getClass();
+      // [TODO] Injected bundle can be null on the client side when
+      // Arquillian incorrectly tries to enrich the test class
+      Class<?> testClass = testCase.getClass();
+      if (bundle == null || isInjectionTarget(testClass) == false)
+         return;
+
       for (Field field : testClass.getDeclaredFields())
       {
          if (field.isAnnotationPresent(Inject.class))
@@ -106,6 +101,23 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
       return null;
    }
 
+   public static boolean isInjectionTarget(Class<?> testClass)
+   {
+      for (Field field : testClass.getDeclaredFields())
+      {
+         if (field.isAnnotationPresent(Inject.class))
+         {
+            if (field.getType().isAssignableFrom(OSGiContainer.class))
+               return true;
+            if (field.getType().isAssignableFrom(BundleContext.class))
+               return true;
+            if (field.getType().isAssignableFrom(Bundle.class))
+               return true;
+         }
+      }
+      return false;
+   }
+
    private void injectOSGiContainer(Context context, Object testCase, Field field)
    {
       try
@@ -123,7 +135,7 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
    {
       try
       {
-         field.set(testCase, getBundleContext(context));
+         field.set(testCase, bundleContext);
       }
       catch (IllegalAccessException ex)
       {
@@ -135,7 +147,7 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
    {
       try
       {
-         field.set(testCase, getTestBundle(context, testCase.getClass()));
+         field.set(testCase, bundle);
       }
       catch (IllegalAccessException ex)
       {
@@ -145,84 +157,7 @@ public class OSGiTestEnricher implements TestEnricher, ExecutionTypeInjector
 
    private OSGiContainer getOSGiContainer(Context context, TestClass testClass)
    {
-      BundleContext bundleContext = getBundleContext(context);
-      ResourceCallbackHandler callbackHandler = ExecutionTypeAssociationAndCallbackHandler.getCallbackHandler();
-
-      OSGiContainer result = null;
-      if (executionType == ExecutionType.EMBEDDED)
-         result = new EmbeddedOSGiContainer(bundleContext, testClass, callbackHandler);
-      else if (executionType == ExecutionType.REMOTE)
-         result = new RemoteOSGiContainer(bundleContext, testClass, callbackHandler);
-
-      return result;
-   }
-
-   private BundleContext getBundleContext(Context context)
-   {
-      BundleContext bundleContext = context.get(BundleContext.class);
-      if (bundleContext == null)
-         bundleContext = getBundleContextFromHolder();
-
-      // Make sure this is really the system context
-      bundleContext = bundleContext.getBundle(0).getBundleContext();
-      return bundleContext;
-   }
-
-   private Bundle getTestBundle(Context context, Class<?> testClass)
-   {
-      Bundle testbundle = context.get(Bundle.class);
-      if (testbundle == null)
-      {
-         // Get the test bundle from PackageAdmin with the test class as key
-         BundleContext bundleContext = getBundleContext(context);
-         ServiceReference sref = bundleContext.getServiceReference(PackageAdmin.class.getName());
-         PackageAdmin pa = (PackageAdmin)bundleContext.getService(sref);
-         testbundle = pa.getBundle(testClass);
-      }
-      return testbundle;
-   }
-
-   /**
-    * Get the BundleContext associated with the arquillian-bundle
-    */
-   private BundleContext getBundleContextFromHolder()
-   {
-      try
-      {
-         MBeanServer mbeanServer = findOrCreateMBeanServer();
-         ObjectName oname = new ObjectName(BundleContextHolder.OBJECT_NAME);
-         BundleContextHolder holder = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, oname, BundleContextHolder.class, false);
-         return holder.getBundleContext();
-      }
-      catch (JMException ex)
-      {
-         throw new IllegalStateException("Cannot obtain arquillian-bundle context", ex);
-      }
-   }
-
-   /**
-    * Find or create the MBeanServer
-    */
-   public static MBeanServer findOrCreateMBeanServer()
-   {
-      MBeanServer mbeanServer = null;
-
-      ArrayList<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(null);
-      if (serverArr.size() > 1)
-         log.warning("Multiple MBeanServer instances: " + serverArr);
-
-      if (serverArr.size() > 0)
-      {
-         mbeanServer = serverArr.get(0);
-         log.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
-      }
-
-      if (mbeanServer == null)
-      {
-         log.fine("No MBeanServer, create one ...");
-         mbeanServer = MBeanServerFactory.createMBeanServer();
-      }
-
-      return mbeanServer;
+      ResourceCallbackHandler callbackHandler = ResourceCallbackHandlerAssociation.getCallbackHandler();
+      return OSGiContainer.Factory.newInstance(bundleContext, testClass, callbackHandler);
    }
 }

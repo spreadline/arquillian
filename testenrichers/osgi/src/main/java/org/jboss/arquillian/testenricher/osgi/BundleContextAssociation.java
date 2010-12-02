@@ -14,39 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.protocol.jmx;
+package org.jboss.arquillian.testenricher.osgi;
 
-import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.osgi.framework.BundleContext;
 
 /**
- * A thread loacl {@link ExecutionType} association
+ * A thread local {@link BundleContext} association
  *
  * @author thomas.diesler@jboss.com
- * @author <a href="david@redhat.com">David Bosschaert</a>
  * @since 18-Nov-2010
  */
-public final class ExecutionTypeAssociationAndCallbackHandler
+public final class BundleContextAssociation
 {
-   private static ThreadLocal<ExecutionType> association = new ThreadLocal<ExecutionType>();
-   private static ThreadLocal<ResourceCallbackHandler> callback = new ThreadLocal<ResourceCallbackHandler>();
+   private static ThreadLocal<BundleContext> association = new ThreadLocal<BundleContext>();
 
-   public static ExecutionType getExecutionType()
+   public static BundleContext getBundleContext()
    {
       return association.get();
    }
 
-   public static void setExecutionType(ExecutionType type)
+   public static void setBundleContext(BundleContext type)
    {
       association.set(type);
-   }
-
-   public static ResourceCallbackHandler getCallbackHandler()
-   {
-      return callback.get();
-   }
-
-   public static void setCallbackHandler(ResourceCallbackHandler handler)
-   {
-      callback.set(handler);
    }
 }

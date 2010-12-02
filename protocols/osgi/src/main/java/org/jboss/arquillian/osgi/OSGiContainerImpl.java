@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.osgi.internal;
+package org.jboss.arquillian.osgi;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,10 +22,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.ZipInputStream;
 
-import javax.management.MBeanServerConnection;
-
-import org.jboss.arquillian.osgi.OSGiContainer;
-import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
 import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.util.TCCLActions;
@@ -41,30 +37,26 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 
 /**
- * An abstract {@link OSGiContainer}
+ * An {@link OSGiContainer} implementation.
  *
  * @author thomas.diesler@jboss.com
  * @author <a href="david@redhat.com">David Bosschaert</a>
  * @since 07-Sep-2010
  */
-public abstract class AbstractOSGiContainer implements OSGiContainer
+class OSGiContainerImpl implements OSGiContainer
 {
    private BundleContext context;
    private TestClass testClass;
    private ResourceCallbackHandler callbackHandler;
 
-   protected AbstractOSGiContainer(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
+   OSGiContainerImpl(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
    {
       this.context = context;
       this.testClass = testClass;
       this.callbackHandler = callbackHandler;
    }
 
-   protected BundleContext getBundleContext()
-   {
-      return context;
-   }
-
+   @Override
    public Bundle installBundle(Archive<?> archive) throws BundleException
    {
       InputStream inputStream;
@@ -88,11 +80,13 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
       return context.installBundle(archive.getName(), inputStream);
    }
 
+   @Override
    public Bundle installBundle(String artifactId) throws BundleException
    {
       return installBundle(null, artifactId, null);
    }
 
+   @Override
    public Bundle installBundle(String groupId, String artifactId, String version) throws BundleException
    {
       URL artifactURL = RepositoryArchiveLocator.getArtifactURL(groupId, artifactId, version);
@@ -109,6 +103,7 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
       return bundle;
    }
 
+   @Override
    public Bundle getBundle(String symbolicName, Version version) throws BundleException
    {
       if (context == null)
@@ -126,6 +121,7 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
       return null;
    }
 
+   @Override
    public Archive<?> getTestArchive(String name)
    {
       InputStream input = getTestArchiveStream(name);
@@ -134,7 +130,7 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
       try
       {
          // Create the archive in the context of the arquillian-osgi-bundle
-         TCCLActions.setClassLoader(AbstractOSGiContainer.class.getClassLoader());
+         TCCLActions.setClassLoader(OSGiContainerImpl.class.getClassLoader());
          JavaArchive archive = ShrinkWrap.create(JavaArchive.class, name);
          ZipImporter zipImporter = archive.as(ZipImporter.class);
          zipImporter.importZip(new ZipInputStream(input));
@@ -146,6 +142,7 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
       }
    }
 
+   @Override
    public InputStream getTestArchiveStream(String name)
    {
       try
@@ -159,6 +156,4 @@ public abstract class AbstractOSGiContainer implements OSGiContainer
          throw new IllegalStateException("Cannot obtain test archive: " + name, ex);
       }
    }
-
-   public abstract MBeanServerConnection getMBeanServerConnection();
 }

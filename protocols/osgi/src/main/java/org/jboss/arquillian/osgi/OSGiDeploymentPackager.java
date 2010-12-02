@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.osgi.internal;
+package org.jboss.arquillian.osgi;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -41,7 +41,6 @@ import org.osgi.framework.Constants;
  * Packager for running Arquillian against OSGi containers.
  *
  * @author thomas.diesler@jboss.com
- * @version $Revision: $
  */
 public class OSGiDeploymentPackager implements DeploymentPackager
 {

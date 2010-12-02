@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.protocol.jmx;
+package org.jboss.arquillian.testenricher.osgi;
 
-import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
+import org.osgi.framework.Bundle;
 
 /**
- * An injector for the {@link ExecutionType}
+ * An injector for the {@link Bundle}
  *
  * @author thomas.diesler@jboss.com
  * @since 18-Nov-2010
  */
-public interface ExecutionTypeInjector
+public interface BundleInjector
 {
-    void inject(ExecutionType value);
+    void inject(Bundle value);
 }

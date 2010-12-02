@@ -14,32 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.osgi.internal;
+package org.jboss.arquillian.protocol.jmx;
 
-import javax.management.MBeanServerConnection;
-
-import org.jboss.arquillian.osgi.OSGiContainer;
-import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
-import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
-import org.jboss.arquillian.spi.TestClass;
-import org.osgi.framework.BundleContext;
 
 /**
- * The embedded version of {@link OSGiContainer}
+ * A thread local {@link ResourceCallbackHandler} association
  *
  * @author thomas.diesler@jboss.com
- * @since 07-Sep-2010
+ * @author <a href="david@redhat.com">David Bosschaert</a>
+ * @since 18-Nov-2010
  */
-public class EmbeddedOSGiContainer extends AbstractOSGiContainer
+public final class ResourceCallbackHandlerAssociation
 {
-   public EmbeddedOSGiContainer(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
+   private static ThreadLocal<ResourceCallbackHandler> association = new ThreadLocal<ResourceCallbackHandler>();
+
+   public static ResourceCallbackHandler getCallbackHandler()
    {
-      super(context, testClass, callbackHandler);
+      return association.get();
    }
 
-   @Override
-   public MBeanServerConnection getMBeanServerConnection()
+   public static void setCallbackHandler(ResourceCallbackHandler handler)
    {
-      return MBeanServerLocator.findOrCreateMBeanServer();
+      association.set(handler);
    }
 }

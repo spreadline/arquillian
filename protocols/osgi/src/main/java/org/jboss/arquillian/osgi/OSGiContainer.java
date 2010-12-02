@@ -18,8 +18,11 @@ package org.jboss.arquillian.osgi;
 
 import java.io.InputStream;
 
+import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
+import org.jboss.arquillian.spi.TestClass;
 import org.jboss.shrinkwrap.api.Archive;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 
@@ -39,14 +42,14 @@ public interface OSGiContainer
 
    /**
     * Installs a bundle from the given maven artifact id.
-    * This method expects the artifact on the test client's classpath.  
+    * This method expects the artifact on the test client's classpath.
     * @throws BundleException If the artifact could not be found or the bundle could not be installed
     */
    Bundle installBundle(String artifactId) throws BundleException;
 
    /**
     * Installs a bundle from the given maven artifact.
-    * This method expects the artifact in the local maven repository.  
+    * This method expects the artifact in the local maven repository.
     * @throws BundleException If the artifact could not be found or the bundle could not be installed
     */
    Bundle installBundle(String groupId, String artifactId, String version) throws BundleException;
@@ -54,7 +57,7 @@ public interface OSGiContainer
    /**
     * Get a bundle from the local framework instance.
     * @param symbolicName The madatory bundle symbolic name
-    * @param version The optional bundle version 
+    * @param version The optional bundle version
     * @return The bundle or null.
     * @throws BundleException If there is a problem accessing the framework
     */
@@ -65,10 +68,18 @@ public interface OSGiContainer
     * This method makes a callback to the client side to generate the archive.
     */
    Archive<?> getTestArchive(String name);
-   
+
    /**
     * Gets an an input stream for an archive with the given name by invoking the {@link ArchiveProvider}.
     * This method makes a callback to the client side to generate the archive.
     */
    InputStream getTestArchiveStream(String name);
+
+   class Factory
+   {
+      public static OSGiContainer newInstance(BundleContext context, TestClass testClass, ResourceCallbackHandler callbackHandler)
+      {
+         return new OSGiContainerImpl(context, testClass, callbackHandler);
+      }
+   }
 }
