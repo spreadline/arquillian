@@ -29,8 +29,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.weld.bootstrap.spi.Metadata;
 
 /**
@@ -296,7 +297,7 @@ public class ServiceLoader<S> implements Iterable<Metadata<S>>
       }
       catch (NoClassDefFoundError e)
       {
-         log.warning("Could not instantiate service class " + serviceClass.getName(), e);
+         log.log(Level.WARNING, "Could not instantiate service class " + serviceClass.getName(), e);
          return null;
       }
       catch (InvocationTargetException e)

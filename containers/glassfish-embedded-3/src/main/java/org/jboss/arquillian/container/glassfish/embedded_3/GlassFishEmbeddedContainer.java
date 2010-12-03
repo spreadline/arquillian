@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import org.glassfish.admin.cli.resources.AddResources;
 import org.glassfish.api.ActionReport;
@@ -43,7 +44,6 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.glassfish.api.ShrinkwrapReadableArchive;
 import org.jvnet.hk2.annotations.Service;

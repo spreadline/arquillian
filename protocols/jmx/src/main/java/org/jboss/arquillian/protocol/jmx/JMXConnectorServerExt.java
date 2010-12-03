@@ -27,14 +27,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 import javax.management.remote.rmi.RMIJRMPServerImpl;
 import javax.management.remote.rmi.RMIServerImpl;
-
-import org.jboss.arquillian.spi.Logger;
 
 /**
  * A RMI/JRMP connector service.
@@ -45,7 +45,7 @@ import org.jboss.arquillian.spi.Logger;
 public class JMXConnectorServerExt
 {
    // Provide logging
-   private static final Logger log = Logger.getLogger(JMXConnectorServerExt.class);
+   private static final Logger log = Logger.getLogger(JMXConnectorServerExt.class.getName());
 
    private JMXServiceURL serviceURL;
    private RMIConnectorServer connectorServer;
@@ -110,7 +110,7 @@ public class JMXConnectorServerExt
       }
       catch (Exception ex)
       {
-         log.warning("Cannot stop JMXConnectorServer", ex);
+         log.log(Level.WARNING, "Cannot stop JMXConnectorServer", ex);
       }
    }
 }

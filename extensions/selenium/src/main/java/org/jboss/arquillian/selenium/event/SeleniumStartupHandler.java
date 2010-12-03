@@ -17,6 +17,7 @@
 package org.jboss.arquillian.selenium.event;
 
 import java.lang.reflect.Field;
+import java.util.logging.Logger;
 
 import org.jboss.arquillian.selenium.SeleniumExtensionConfiguration;
 import org.jboss.arquillian.selenium.annotation.Selenium;
@@ -24,7 +25,6 @@ import org.jboss.arquillian.selenium.instantiator.InstantiatorUtil;
 import org.jboss.arquillian.selenium.spi.Instantiator;
 import org.jboss.arquillian.spi.Configuration;
 import org.jboss.arquillian.spi.Context;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.event.suite.ClassEvent;
 import org.jboss.arquillian.spi.event.suite.EventHandler;

@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
 
@@ -35,7 +36,6 @@ import org.jboss.arquillian.protocol.jmx.MBeanServerLocator;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeploymentException;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.osgi.spi.framework.OSGiBootstrap;
 import org.jboss.osgi.spi.framework.OSGiBootstrapProvider;
@@ -58,7 +58,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 public class EmbeddedDeployableContainer extends AbstractDeployableContainer
 {
    // Provide logging
-   private static final Logger log = Logger.getLogger(EmbeddedDeployableContainer.class);
+   private static final Logger log = Logger.getLogger(EmbeddedDeployableContainer.class.getName());
 
    private Framework framework;
 

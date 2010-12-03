@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.openejb.assembler.classic.AppInfo;
 import org.jboss.arquillian.prototyping.context.api.ArquillianContext;
@@ -27,7 +28,6 @@ import org.jboss.arquillian.prototyping.context.api.openejb.OpenEJBArquillianCon
 import org.jboss.arquillian.prototyping.context.impl.ArquillianContextResolver;
 import org.jboss.arquillian.prototyping.context.impl.BaseContext;
 import org.jboss.arquillian.prototyping.context.spi.ContextualResolver;
-import org.jboss.arquillian.spi.Logger;
 
 /**
  * OpenEJB Container implementation of a {@link ArquillianContext}.

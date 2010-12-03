@@ -24,6 +24,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.management.JMException;
 import javax.management.MBeanNotificationInfo;
@@ -33,7 +34,6 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.StandardEmitterMBean;
 
 import org.jboss.arquillian.protocol.jmx.RequestedCommand.Command;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestResult.Status;
@@ -51,7 +51,7 @@ import org.jboss.arquillian.spi.util.TestRunners;
 public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandler
 {
    // Provide logging
-   private static Logger log = Logger.getLogger(JMXTestRunner.class);
+   private static Logger log = Logger.getLogger(JMXTestRunner.class.getName());
 
    public static final String REQUEST_COMMAND = "org.jboss.arquillian.protocol.jmx.request_command";
 

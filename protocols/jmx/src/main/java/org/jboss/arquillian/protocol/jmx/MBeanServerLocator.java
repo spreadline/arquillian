@@ -17,11 +17,10 @@
 package org.jboss.arquillian.protocol.jmx;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
-
-import org.jboss.arquillian.spi.Logger;
 
 /**
  * An arquillian {@link MBeanServer} locator
@@ -32,7 +31,7 @@ import org.jboss.arquillian.spi.Logger;
 public final class MBeanServerLocator
 {
    // Provide logging
-   private static Logger log = Logger.getLogger(MBeanServerLocator.class);
+   private static Logger log = Logger.getLogger(MBeanServerLocator.class.getName());
 
    // Hide ctor
    private MBeanServerLocator()

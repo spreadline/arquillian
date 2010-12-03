@@ -17,6 +17,7 @@
 package org.jboss.arquillian.testenricher.cdi;
 
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
@@ -24,7 +25,6 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.naming.InitialContext;
 
 import org.jboss.arquillian.spi.Context;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestEnricher;
 
 /**

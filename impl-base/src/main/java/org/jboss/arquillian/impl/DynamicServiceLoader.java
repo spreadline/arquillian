@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.ServiceLoader;
 import org.jboss.arquillian.spi.util.TCCLActions;
 

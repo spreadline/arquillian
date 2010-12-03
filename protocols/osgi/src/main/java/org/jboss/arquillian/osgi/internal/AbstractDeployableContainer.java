@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
@@ -29,7 +31,6 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -46,7 +47,7 @@ import org.osgi.framework.BundleException;
 public abstract class AbstractDeployableContainer implements DeployableContainer
 {
    // Provide logging
-   private static final Logger log = Logger.getLogger(AbstractDeployableContainer.class);
+   private static final Logger log = Logger.getLogger(AbstractDeployableContainer.class.getName());
 
    private BundleList supportBundles = new BundleList();
 
@@ -188,7 +189,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
       catch (Exception ex)
       {
-         log.severe("Cannot uninstall bundle: " + handle, ex);
+         log.log(Level.SEVERE, "Cannot uninstall bundle: " + handle, ex);
       }
    }
 

@@ -17,6 +17,7 @@
 package org.jboss.arquillian.container.jetty.embedded_7;
 
 import java.net.URL;
+import java.util.logging.Logger;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -30,7 +31,6 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.jetty_7.api.ShrinkWrapWebAppContext;
 

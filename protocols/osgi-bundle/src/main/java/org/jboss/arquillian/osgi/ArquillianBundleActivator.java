@@ -22,13 +22,13 @@
 package org.jboss.arquillian.osgi;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
 import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunner.TestClassLoader;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.testenricher.osgi.BundleAssociation;
 import org.jboss.arquillian.testenricher.osgi.BundleContextAssociation;
 import org.osgi.framework.Bundle;
@@ -48,7 +48,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 public class ArquillianBundleActivator implements BundleActivator
 {
    // Provide logging
-   private static Logger log = Logger.getLogger(ArquillianBundleActivator.class);
+   private static Logger log = Logger.getLogger(ArquillianBundleActivator.class.getName());
 
    private JMXTestRunner testRunner;
 

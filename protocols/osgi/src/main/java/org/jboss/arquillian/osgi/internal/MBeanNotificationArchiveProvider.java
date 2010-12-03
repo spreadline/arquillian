@@ -17,6 +17,8 @@
 package org.jboss.arquillian.osgi.internal;
 
 import java.io.ByteArrayOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanServerInvocationHandler;
@@ -29,7 +31,6 @@ import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.protocol.jmx.RequestedCommand;
 import org.jboss.arquillian.protocol.jmx.Utils;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
@@ -38,7 +39,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  */
 public class MBeanNotificationArchiveProvider implements InternalArchiveProvider, NotificationListener
 {
-   private static Logger log = Logger.getLogger(MBeanNotificationArchiveProvider.class);
+   private static Logger log = Logger.getLogger(MBeanNotificationArchiveProvider.class.getName());
 
    private final ArchiveProvider archiveProvider;
    private final MBeanServerConnection mBeanServer;
@@ -72,7 +73,7 @@ public class MBeanNotificationArchiveProvider implements InternalArchiveProvider
       }
       catch (Exception e)
       {
-         log.warning("Problem unregistering MBean Listener", e);
+         log.log(Level.SEVERE, "Problem unregistering MBean Listener", e);
       }
    }
 

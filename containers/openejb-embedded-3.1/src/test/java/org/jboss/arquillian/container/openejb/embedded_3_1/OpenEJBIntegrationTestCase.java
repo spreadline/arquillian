@@ -16,13 +16,14 @@
  */
 package org.jboss.arquillian.container.openejb.embedded_3_1;
 
+import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.container.openejb.embedded_3_1.ejb.EchoBean;
 import org.jboss.arquillian.container.openejb.embedded_3_1.ejb.EchoLocalBusiness;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;

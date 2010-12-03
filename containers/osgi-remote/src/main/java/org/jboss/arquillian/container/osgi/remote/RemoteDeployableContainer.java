@@ -19,6 +19,8 @@ package org.jboss.arquillian.container.osgi.remote;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
@@ -38,7 +40,6 @@ import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.osgi.spi.util.BundleInfo;
 import org.jboss.osgi.testing.OSGiTestHelper;
@@ -61,7 +62,7 @@ import org.osgi.jmx.framework.FrameworkMBean;
 public class RemoteDeployableContainer extends AbstractDeployableContainer
 {
    // Provide logging
-   private static final Logger log = Logger.getLogger(RemoteDeployableContainer.class);
+   private static final Logger log = Logger.getLogger(RemoteDeployableContainer.class.getName());
 
    private JMXConnector jmxConnector;
    private ManagementSupport jmxSupport;
@@ -154,7 +155,7 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       {
          Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
          if (cause instanceof InstanceNotFoundException == false)
-            log.warning("Cannot get state for bundle: " + this, cause);
+            log.log(Level.WARNING, "Cannot get state for bundle: " + this, cause);
 
          return Bundle.UNINSTALLED;
       }
