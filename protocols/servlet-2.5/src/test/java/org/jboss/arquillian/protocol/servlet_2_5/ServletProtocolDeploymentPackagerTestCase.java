@@ -47,11 +47,9 @@ public class ServletProtocolDeploymentPackagerTestCase
    public void shouldHandleJavaArchive() throws Exception
    {
       TestClass testClass = new TestClass(getClass());
-      Context context = Mockito.mock(Context.class);
-      Mockito.when(context.get(TestClass.class)).thenReturn(testClass);
 
       Archive<?> archive = new ServletProtocolDeploymentPackager().generateDeployment(
-            context, new TestDeployment(
+            new TestDeployment(
                              ShrinkWrap.create(JavaArchive.class, "applicationArchive.jar"),
                              createAuxiliaryArchives()));
 
@@ -77,11 +75,9 @@ public class ServletProtocolDeploymentPackagerTestCase
    public void shouldHandleWebArchive() throws Exception
    {
        TestClass testClass = new TestClass(getClass());
-       Context context = Mockito.mock(Context.class);
-       Mockito.when(context.get(TestClass.class)).thenReturn(testClass);
 
       new ServletProtocolDeploymentPackager().generateDeployment(
-            context, new TestDeployment(
+            new TestDeployment(
                       ShrinkWrap.create(WebArchive.class, "applicationArchive.war"),
                       createAuxiliaryArchives()));
 
@@ -91,11 +87,9 @@ public class ServletProtocolDeploymentPackagerTestCase
    public void shouldHandleEnterpriseArchive() throws Exception
    {
        TestClass testClass = new TestClass(getClass());
-       Context context = Mockito.mock(Context.class);
-       Mockito.when(context.get(TestClass.class)).thenReturn(testClass);
 
       Archive<?> archive = new ServletProtocolDeploymentPackager().generateDeployment(
-            context, new TestDeployment(
+            new TestDeployment(
                       ShrinkWrap.create(EnterpriseArchive.class, "applicationArchive.ear"),
                       createAuxiliaryArchives()));
 

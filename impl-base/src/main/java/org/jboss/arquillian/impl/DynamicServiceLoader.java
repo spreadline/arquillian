@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.jboss.arquillian.spi.Logger;
 import org.jboss.arquillian.spi.ServiceLoader;
-import org.jboss.arquillian.spi.util.SecurityActions;
 import org.jboss.arquillian.spi.util.TCCLActions;
 
 /**

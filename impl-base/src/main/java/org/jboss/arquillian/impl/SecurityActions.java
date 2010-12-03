@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.spi.util;
+package org.jboss.arquillian.impl;
 
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
@@ -65,14 +65,14 @@ final class SecurityActions
     * @return
     * @throws NoSuchMethodException
     */
-   static Constructor<?> getConstructor(final Class<?> clazz, final Class<?>... argumentTypes)
+   static <T> Constructor<T> getConstructor(final Class<T> clazz, final Class<?>... argumentTypes)
          throws NoSuchMethodException
    {
       try
       {
-         return AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor<?>>()
+         return AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor<T>>()
          {
-            public Constructor<?> run() throws NoSuchMethodException
+            public Constructor<T> run() throws NoSuchMethodException
             {
                return clazz.getConstructor(argumentTypes);
             }

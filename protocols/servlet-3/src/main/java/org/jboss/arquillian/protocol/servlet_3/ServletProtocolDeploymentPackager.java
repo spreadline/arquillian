@@ -38,7 +38,7 @@ public class ServletProtocolDeploymentPackager implements DeploymentPackager
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.DeploymentPackager#generateDeployment(org.jboss.arquillian.spi.TestDeployment)
     */
-   public Archive<?> generateDeployment(Context context, TestDeployment testDeployment)
+   public Archive<?> generateDeployment(TestDeployment testDeployment)
    {
       Archive<?> protocol = new ProtocolDeploymentAppender().createAuxiliaryArchive();
       

@@ -68,7 +68,7 @@ public class ClientDeploymentGenerator implements DeploymentGenerator
 
       TestDeployment deployment = new TestDeployment(applicationArchive, auxiliaryArchives);
       context.add(TestDeployment.class, deployment);
-      return packager.generateDeployment(context, deployment);
+      return packager.generateDeployment(deployment);
    }
    
    private List<Archive<?>> loadAuxiliaryArchives() 

@@ -44,7 +44,7 @@ import org.osgi.framework.Constants;
  */
 public class OSGiDeploymentPackager implements DeploymentPackager
 {
-   public Archive<?> generateDeployment(Context context, TestDeployment testDeployment)
+   public Archive<?> generateDeployment(TestDeployment testDeployment)
    {
       // Arquillian generates auxiliary archives that aren't bundles
       Collection<Archive<?>> auxArchives = testDeployment.getAuxiliaryArchives();
@@ -52,7 +52,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager
 
       Archive<?> appArchive = testDeployment.getApplicationArchive();
 
-      enhanceApplicationArchive(context, JavaArchive.class.cast(appArchive));
+      enhanceApplicationArchive(JavaArchive.class.cast(appArchive));
       assertValidBundleArchive(appArchive);
 
       return appArchive;
@@ -62,76 +62,77 @@ public class OSGiDeploymentPackager implements DeploymentPackager
     * Add or modify the manifest such that it exports the test class package and
     * imports all types that are used in fields, methods, annotations
     */
-   private void enhanceApplicationArchive(Context context, Archive<?> archive)
+   private void enhanceApplicationArchive(Archive<?> archive)
    {
       if (JavaArchive.class.isAssignableFrom(archive.getClass()) == false)
          throw new IllegalArgumentException("JavaArchive expected: " + archive);
 
-      JavaArchive appArchive = JavaArchive.class.cast(archive);
-      TestClass testClass = context.get(TestClass.class);
-      Class<?> javaClass = testClass.getJavaClass();
-
-      // Check if the application archive already contains the test class
-      String path = javaClass.getName().replace('.', '/') + ".class";
-      if (appArchive.contains(path) == false)
-         appArchive.addClass(javaClass);
-
-      final OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
-      Manifest manifest = getBundleManifest(appArchive);
-      if (manifest != null)
-      {
-         Attributes attributes = manifest.getMainAttributes();
-         for (Entry<Object, Object> entry : attributes.entrySet())
-         {
-            String key = entry.getKey().toString();
-            String value = (String)entry.getValue();
-            if (key.equals("Manifest-Version"))
-               continue;
-
-            if (key.equals(Constants.IMPORT_PACKAGE))
-            {
-               String[] imports = value.split(",");
-               builder.addImportPackages(imports);
-               continue;
-            }
-
-            if (key.equals(Constants.EXPORT_PACKAGE))
-            {
-               String[] exports = value.split(",");
-               builder.addExportPackages(exports);
-               continue;
-            }
-
-            builder.addManifestHeader(key, value);
-         }
-      }
-      else
-      {
-         builder.addBundleManifestVersion(2);
-         builder.addBundleSymbolicName(appArchive.getName());
-      }
-
-      // Export the test class package
-      builder.addExportPackages(javaClass);
-
-      // Add the imports required by the test class
-      addImportsForClass(builder, javaClass);
-
-      // Add framework imports
-      // [TODO] use bnd or another tool to do this more intelligently
-      builder.addImportPackages("org.jboss.arquillian.api", "org.jboss.arquillian.junit", "org.jboss.arquillian.osgi");
-      builder.addImportPackages("org.jboss.shrinkwrap.api", "org.jboss.shrinkwrap.api.asset", "org.jboss.shrinkwrap.api.spec");
-      builder.addImportPackages("org.junit", "org.junit.runner", "javax.inject", "org.osgi.framework");
-      builder.addImportPackages("org.jboss.osgi.spi.util", "org.jboss.osgi.testing");
-
-      // Add the manifest to the archive
-      appArchive.setManifest(new Asset()
-      {
-         public InputStream openStream()
-         {
-            return builder.openStream();
-         }
-      });
+      throw new RuntimeException("To be moved into ApplicationArchivePackager");
+//      JavaArchive appArchive = JavaArchive.class.cast(archive);
+//      TestClass testClass = context.get(TestClass.class);
+//      Class<?> javaClass = testClass.getJavaClass();
+//
+//      // Check if the application archive already contains the test class
+//      String path = javaClass.getName().replace('.', '/') + ".class";
+//      if (appArchive.contains(path) == false)
+//         appArchive.addClass(javaClass);
+//
+//      final OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
+//      Manifest manifest = getBundleManifest(appArchive);
+//      if (manifest != null)
+//      {
+//         Attributes attributes = manifest.getMainAttributes();
+//         for (Entry<Object, Object> entry : attributes.entrySet())
+//         {
+//            String key = entry.getKey().toString();
+//            String value = (String)entry.getValue();
+//            if (key.equals("Manifest-Version"))
+//               continue;
+//
+//            if (key.equals(Constants.IMPORT_PACKAGE))
+//            {
+//               String[] imports = value.split(",");
+//               builder.addImportPackages(imports);
+//               continue;
+//            }
+//
+//            if (key.equals(Constants.EXPORT_PACKAGE))
+//            {
+//               String[] exports = value.split(",");
+//               builder.addExportPackages(exports);
+//               continue;
+//            }
+//
+//            builder.addManifestHeader(key, value);
+//         }
+//      }
+//      else
+//      {
+//         builder.addBundleManifestVersion(2);
+//         builder.addBundleSymbolicName(appArchive.getName());
+//      }
+//
+//      // Export the test class package
+//      builder.addExportPackages(javaClass);
+//
+//      // Add the imports required by the test class
+//      addImportsForClass(builder, javaClass);
+//
+//      // Add framework imports
+//      // [TODO] use bnd or another tool to do this more intelligently
+//      builder.addImportPackages("org.jboss.arquillian.api", "org.jboss.arquillian.junit", "org.jboss.arquillian.osgi");
+//      builder.addImportPackages("org.jboss.shrinkwrap.api", "org.jboss.shrinkwrap.api.asset", "org.jboss.shrinkwrap.api.spec");
+//      builder.addImportPackages("org.junit", "org.junit.runner", "javax.inject", "org.osgi.framework");
+//      builder.addImportPackages("org.jboss.osgi.spi.util", "org.jboss.osgi.testing");
+//
+//      // Add the manifest to the archive
+//      appArchive.setManifest(new Asset()
+//      {
+//         public InputStream openStream()
+//         {
+//            return builder.openStream();
+//         }
+//      });
    }
 
    private void addImportsForClass(OSGiManifestBuilder builder, Class<?> javaClass)

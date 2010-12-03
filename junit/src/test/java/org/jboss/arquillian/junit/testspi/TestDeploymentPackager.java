@@ -32,7 +32,7 @@ public class TestDeploymentPackager implements DeploymentPackager
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.DeploymentPackager#generateDeployment(org.jboss.shrinkwrap.api.Archive, java.util.Collection)
     */
-   public Archive<?> generateDeployment(Context context, TestDeployment deploymentMetadata)
+   public Archive<?> generateDeployment(TestDeployment deploymentMetadata)
    {
       return deploymentMetadata.getApplicationArchive();
    }
