@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jboss.arquillian.spi.ServiceLoader;
-import org.jboss.arquillian.spi.util.TCCLActions;
 
 /**
  * ServiceLoader implementation that use META-INF/services/interface files to registered Services.
@@ -59,7 +58,7 @@ public class DynamicServiceLoader implements ServiceLoader
 
       return createInstances(
             serviceClass,
-            load(serviceClass, TCCLActions.getClassLoader()));
+            load(serviceClass, SecurityActions.getThreadContextClassLoader()));
    }
 
    /* (non-Javadoc)
@@ -69,7 +68,7 @@ public class DynamicServiceLoader implements ServiceLoader
    {
       Validate.notNull(serviceClass, "ServiceClass must be provided");
 
-      Set<Class<? extends T>> serviceImpls = load(serviceClass, TCCLActions.getClassLoader());
+      Set<Class<? extends T>> serviceImpls = load(serviceClass, SecurityActions.getThreadContextClassLoader());
       verifyOnlyOneOrSameImplementation(serviceClass, serviceImpls);
 
       return createInstance(serviceImpls.iterator().next());
@@ -85,7 +84,7 @@ public class DynamicServiceLoader implements ServiceLoader
 
       Class<? extends T> serviceImplToCreate = defaultServiceClass;
 
-      Set<Class<? extends T>> serviceImpls = load(serviceClass, TCCLActions.getClassLoader());
+      Set<Class<? extends T>> serviceImpls = load(serviceClass, SecurityActions.getThreadContextClassLoader());
       if(serviceImpls.size() > 0)
       {
          verifySameImplementation(serviceClass, serviceImpls);

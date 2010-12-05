@@ -38,7 +38,6 @@ import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestResult.Status;
 import org.jboss.arquillian.spi.TestRunner;
-import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.arquillian.spi.util.TestRunners;
 
 /**
@@ -138,17 +137,17 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
          ClassLoader serviceClassLoader = getTestClassLoader().getServiceClassLoader();
          TestRunner runner = TestRunners.getTestRunner(serviceClassLoader);
 
-         ClassLoader tccl = TCCLActions.getClassLoader();
+         ClassLoader tccl = SecurityActions.getThreadContextClassLoader();
          try
          {
-            TCCLActions.setClassLoader(serviceClassLoader);
+            SecurityActions.setThreadContextClassLoader(serviceClassLoader);
             Class<?> testClass = getTestClassLoader().loadTestClass(className);
             TestResult testResult = runner.execute(testClass, methodName);
             return testResult;
          }
          finally
          {
-            TCCLActions.setClassLoader(tccl);
+            SecurityActions.setThreadContextClassLoader(tccl);
          }
       }
       catch (Throwable th)

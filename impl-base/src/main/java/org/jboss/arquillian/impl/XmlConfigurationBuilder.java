@@ -31,7 +31,6 @@ import org.jboss.arquillian.spi.ConfigurationException;
 import org.jboss.arquillian.spi.ContainerConfiguration;
 import org.jboss.arquillian.spi.ExtensionConfiguration;
 import org.jboss.arquillian.spi.ServiceLoader;
-import org.jboss.arquillian.spi.util.TCCLActions;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -141,7 +140,7 @@ public class XmlConfigurationBuilder implements ConfigurationBuilder
       try
       {
          // load the xml configuration file
-         ClassLoader classLoader = TCCLActions.getClassLoader();
+         ClassLoader classLoader = SecurityActions.getThreadContextClassLoader();
          inputStream = classLoader.getResourceAsStream(resourcePath);
 
          if (inputStream != null)

@@ -24,7 +24,6 @@ import java.util.zip.ZipInputStream;
 
 import org.jboss.arquillian.protocol.jmx.ResourceCallbackHandler;
 import org.jboss.arquillian.spi.TestClass;
-import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.osgi.spi.util.BundleInfo;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -126,11 +125,11 @@ class OSGiContainerImpl implements OSGiContainer
    {
       InputStream input = getTestArchiveStream(name);
 
-      ClassLoader ctxLoader = TCCLActions.getClassLoader();
+      ClassLoader ctxLoader = SecurityActions.getThreadContextClassLoader();
       try
       {
          // Create the archive in the context of the arquillian-osgi-bundle
-         TCCLActions.setClassLoader(OSGiContainerImpl.class.getClassLoader());
+         SecurityActions.setThreadContextClassLoader(OSGiContainerImpl.class.getClassLoader());
          JavaArchive archive = ShrinkWrap.create(JavaArchive.class, name);
          ZipImporter zipImporter = archive.as(ZipImporter.class);
          zipImporter.importZip(new ZipInputStream(input));
@@ -138,7 +137,7 @@ class OSGiContainerImpl implements OSGiContainer
       }
       finally
       {
-         TCCLActions.setClassLoader(ctxLoader);
+         SecurityActions.setThreadContextClassLoader(ctxLoader);
       }
    }
 

@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.arquillian.spi.TestResult;
 import org.jboss.arquillian.spi.TestResult.Status;
 import org.jboss.arquillian.spi.TestRunner;
-import org.jboss.arquillian.spi.util.TCCLActions;
 import org.jboss.arquillian.spi.util.TestRunners;
 
 /**
@@ -78,7 +77,7 @@ public class ServletTestRunner extends HttpServlet
             throw new IllegalArgumentException(PARA_METHOD_NAME + " must be specified");
          }
 
-         Class<?> testClass = TCCLActions.getClassLoader().loadClass(className);
+         Class<?> testClass = SecurityActions.getThreadContextClassLoader().loadClass(className);
 
          TestRunner runner = TestRunners.getTestRunner();
 

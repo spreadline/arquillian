@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.jboss.arquillian.osgi.OSGiApplicationArchiveProcessor;
 import org.jboss.arquillian.osgi.OSGiDeploymentPackager;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.TestClass;
@@ -40,7 +41,7 @@ import org.mockito.Mockito;
  * @author thomas.diesler@jboss.com
  * @version $Revision: $
  */
-public class OSGiDeploymentPackagerTestCase
+public class OSGiApplicationArchiveProcessorTestCase
 {
    @Test
    public void testValidBundle() throws Exception
@@ -57,8 +58,8 @@ public class OSGiDeploymentPackagerTestCase
          }
       });
 
-      Archive<?> result = new OSGiDeploymentPackager().generateDeployment(new TestDeployment(archive, new ArrayList<Archive<?>>()));
-      assertNotNull("Result archive not null", result);
+      new OSGiApplicationArchiveProcessor().process(archive, new TestClass(this.getClass()));
+      //FIXME Look at manifest
    }
 
    @Test
@@ -75,8 +76,9 @@ public class OSGiDeploymentPackagerTestCase
       });
       try
       {
-         new OSGiDeploymentPackager().generateDeployment(new TestDeployment(archive, new ArrayList<Archive<?>>()));
-         fail("RuntimeException expected");
+          //FIXME Make work again
+          new OSGiApplicationArchiveProcessor().process(archive, new TestClass(this.getClass()));
+          fail("RuntimeException expected");
       }
       catch (RuntimeException ex)
       {
