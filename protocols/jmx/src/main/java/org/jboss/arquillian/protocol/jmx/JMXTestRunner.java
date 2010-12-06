@@ -136,12 +136,11 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
          // Get the TestRunner
          ClassLoader serviceClassLoader = getTestClassLoader().getServiceClassLoader();
          TestRunner runner = TestRunners.getTestRunner(serviceClassLoader);
-
+         Class<?> testClass = getTestClassLoader().loadTestClass(className);
          ClassLoader tccl = SecurityActions.getThreadContextClassLoader();
          try
          {
-            SecurityActions.setThreadContextClassLoader(serviceClassLoader);
-            Class<?> testClass = getTestClassLoader().loadTestClass(className);
+            SecurityActions.setThreadContextClassLoader(SecurityActions.getClassLoader(testClass));
             TestResult testResult = runner.execute(testClass, methodName);
             return testResult;
          }

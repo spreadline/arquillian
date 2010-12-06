@@ -81,6 +81,23 @@ final class SecurityActions
        });
    }
 
+   /**
+    * Get the classloader of a class
+    * @param clazz the class
+    * @return The class loader
+    */
+   static ClassLoader getClassLoader(final Class<?> clazz) {
+       if (System.getSecurityManager() == null) {
+           return clazz.getClassLoader();
+       }
+       return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+           @Override
+           public ClassLoader run() {
+               return clazz.getClassLoader();
+           }
+       });
+   }
+
    //-------------------------------------------------------------------------------||
    // Inner Classes ----------------------------------------------------------------||
    //-------------------------------------------------------------------------------||
