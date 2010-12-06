@@ -19,6 +19,8 @@ package org.jboss.arquillian.protocol.jmx;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -138,9 +140,13 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
          TestRunner runner = TestRunners.getTestRunner(serviceClassLoader);
          Class<?> testClass = getTestClassLoader().loadTestClass(className);
          ClassLoader tccl = SecurityActions.getThreadContextClassLoader();
+         
+         //TODO get rid of this and use test class classloader once MODULES-55 is available
+         ClassLoader realCl = new Modules55ClassLoader(SecurityActions.getClassLoader(testClass), serviceClassLoader);
          try
          {
-            SecurityActions.setThreadContextClassLoader(SecurityActions.getClassLoader(testClass));
+            //SecurityActions.setThreadContextClassLoader(SecurityActions.getClassLoader(testClass));
+            SecurityActions.setThreadContextClassLoader(realCl);
             TestResult testResult = runner.execute(testClass, methodName);
             return testResult;
          }
@@ -194,5 +200,84 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
       BlockingQueue<byte[]> resultBQ = results.get(commandId);
       if (resultBQ != null)
          resultBQ.offer(result);
+   }
+   
+   private static class Modules55ClassLoader extends ClassLoader 
+   {
+      private final ClassLoader testClassLoader; 
+      private final ClassLoader serviceClassLoader;
+
+      public Modules55ClassLoader(ClassLoader testClassLoader, ClassLoader serviceClassLoader)
+      {
+         this.testClassLoader = testClassLoader;
+         this.serviceClassLoader = serviceClassLoader;
+      }
+
+      @Override
+      public URL getResource(String name)
+      {
+         URL url = testClassLoader.getResource(name);
+         if (url != null) {
+            return url;
+         }
+         return serviceClassLoader.getResource(name);
+      }
+
+      @Override
+      public InputStream getResourceAsStream(String name)
+      {
+         InputStream in = testClassLoader.getResourceAsStream(name);
+         if (in != null) {
+            return in;
+         }
+         return serviceClassLoader.getResourceAsStream(name);
+      }
+
+      @Override
+      public Enumeration<URL> getResources(String name) throws IOException
+      {
+         final Enumeration<URL> test = testClassLoader.getResources(name);
+         final Enumeration<URL> service = serviceClassLoader.getResources(name);
+         if (!test.hasMoreElements()) {
+            return service;
+         }
+         if (!service.hasMoreElements()) {
+            return test;
+         }
+         
+         return new Enumeration<URL>()
+         {
+            Enumeration<URL> current = test;
+            
+            @Override
+            public boolean hasMoreElements()
+            {
+               if (current.hasMoreElements()) {
+                  return true;
+               }
+               if (current == test) {
+                  current = service;
+               }
+               return current.hasMoreElements();
+            }
+
+            @Override
+            public URL nextElement()
+            {
+               return current.nextElement();
+            }
+         };
+      }
+
+      @Override
+      public Class<?> loadClass(String name) throws ClassNotFoundException
+      {
+         try {
+            return testClassLoader.loadClass(name);
+         } catch (ClassNotFoundException e) {
+            //FIXME the serviceClassLoader classes need to be visible from the testClassLoader
+            return serviceClassLoader.loadClass(name);
+         }
+      }
    }
 }
