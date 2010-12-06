@@ -50,6 +50,12 @@ public class OSGiApplicationArchiveProcessor implements ApplicationArchiveProces
     @Override
     public void process(Archive<?> applicationArchive, TestClass testClass)
     {
+       enhanceApplicationArchive(applicationArchive, testClass);
+       assertValidBundleArchive(applicationArchive);
+    }
+    
+    private void enhanceApplicationArchive(Archive<?> applicationArchive, TestClass testClass)
+    {
         if (JavaArchive.class.isAssignableFrom(applicationArchive.getClass()) == false)
             throw new IllegalArgumentException("JavaArchive expected: " + applicationArchive);
 
