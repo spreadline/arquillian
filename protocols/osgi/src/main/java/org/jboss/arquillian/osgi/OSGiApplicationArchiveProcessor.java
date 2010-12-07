@@ -40,9 +40,10 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.osgi.framework.Constants;
 
 /**
- * 
+ * Generates the test bundle.
+ *
+ * @author Thomas.Diesler@jboss.com
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
- * @version $Revision: 1.1 $
  */
 public class OSGiApplicationArchiveProcessor implements ApplicationArchiveProcessor
 {
@@ -53,7 +54,7 @@ public class OSGiApplicationArchiveProcessor implements ApplicationArchiveProces
        enhanceApplicationArchive(applicationArchive, testClass);
        assertValidBundleArchive(applicationArchive);
     }
-    
+
     private void enhanceApplicationArchive(Archive<?> applicationArchive, TestClass testClass)
     {
         if (JavaArchive.class.isAssignableFrom(applicationArchive.getClass()) == false)

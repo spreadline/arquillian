@@ -33,7 +33,7 @@ import org.jboss.arquillian.spi.ServiceLoader;
  * ServiceLoader implementation that use META-INF/services/interface files to registered Services.
  *
  * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
- * @version $Revision: $
+ * @author Thomas.Diesler@jboss.com
  */
 public class DynamicServiceLoader implements ServiceLoader
 {
@@ -44,10 +44,29 @@ public class DynamicServiceLoader implements ServiceLoader
    private static Logger logger = Logger.getLogger(DynamicServiceLoader.class.getName());
 
    private static final String SERVICES = "META-INF/services";
+   private static ThreadLocal<ClassLoader> classLoaderAssociation = new ThreadLocal<ClassLoader>();
+   private ClassLoader classLoader;
 
    //-------------------------------------------------------------------------------------||
    // Required Implementations - ServiceLoader -------------------------------------------||
    //-------------------------------------------------------------------------------------||
+
+   public DynamicServiceLoader() {
+      classLoader = classLoaderAssociation.get();
+      if (classLoader == null)
+          classLoader = SecurityActions.getThreadContextClassLoader();
+   }
+
+   /**
+    * Set the prefered classloader to be used by this ServiceLoader
+    */
+   public static void setClassLoaderAssociation(ClassLoader value)
+   {
+      if (value != null)
+          classLoaderAssociation.set(value);
+      else
+         classLoaderAssociation.remove();
+   }
 
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.ServiceLoader#all(java.lang.Class)
@@ -55,10 +74,7 @@ public class DynamicServiceLoader implements ServiceLoader
    public <T> Collection<T> all(Class<T> serviceClass)
    {
       Validate.notNull(serviceClass, "ServiceClass must be provided");
-
-      return createInstances(
-            serviceClass,
-            load(serviceClass, SecurityActions.getThreadContextClassLoader()));
+      return createInstances(serviceClass, load(serviceClass, classLoader));
    }
 
    /* (non-Javadoc)
@@ -68,7 +84,7 @@ public class DynamicServiceLoader implements ServiceLoader
    {
       Validate.notNull(serviceClass, "ServiceClass must be provided");
 
-      Set<Class<? extends T>> serviceImpls = load(serviceClass, SecurityActions.getThreadContextClassLoader());
+      Set<Class<? extends T>> serviceImpls = load(serviceClass, classLoader);
       verifyOnlyOneOrSameImplementation(serviceClass, serviceImpls);
 
       return createInstance(serviceImpls.iterator().next());
@@ -84,7 +100,7 @@ public class DynamicServiceLoader implements ServiceLoader
 
       Class<? extends T> serviceImplToCreate = defaultServiceClass;
 
-      Set<Class<? extends T>> serviceImpls = load(serviceClass, SecurityActions.getThreadContextClassLoader());
+      Set<Class<? extends T>> serviceImpls = load(serviceClass, classLoader);
       if(serviceImpls.size() > 0)
       {
          verifySameImplementation(serviceClass, serviceImpls);

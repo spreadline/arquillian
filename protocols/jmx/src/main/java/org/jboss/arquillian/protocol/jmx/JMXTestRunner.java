@@ -19,8 +19,6 @@ package org.jboss.arquillian.protocol.jmx;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -35,6 +33,7 @@ import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.StandardEmitterMBean;
 
+import org.jboss.arquillian.impl.DynamicServiceLoader;
 import org.jboss.arquillian.protocol.jmx.RequestedCommand.Command;
 import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestResult;
@@ -69,9 +68,7 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
    public void registerMBean(MBeanServer mbeanServer) throws JMException
    {
       String[] types = { REQUEST_COMMAND };
-      MBeanNotificationInfo info = new MBeanNotificationInfo(types,
-            Notification.class.getName(),
-            "A command request event has been emitted by this mbean");
+      MBeanNotificationInfo info = new MBeanNotificationInfo(types, Notification.class.getName(), "A command request event has been emitted by this mbean");
       NotificationBroadcasterSupport emitter = new NotificationBroadcasterSupport(info);
 
       mbean = new StandardEmitterMBean(this, JMXTestRunnerMBean.class, emitter);
@@ -139,20 +136,19 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
          ClassLoader serviceClassLoader = getTestClassLoader().getServiceClassLoader();
          TestRunner runner = TestRunners.getTestRunner(serviceClassLoader);
          Class<?> testClass = getTestClassLoader().loadTestClass(className);
-         ClassLoader tccl = SecurityActions.getThreadContextClassLoader();
-         
-         //TODO get rid of this and use test class classloader once MODULES-55 is available
-         ClassLoader realCl = new Modules55ClassLoader(SecurityActions.getClassLoader(testClass), serviceClassLoader);
+
+         ClassLoader oldThreadContextCL = SecurityActions.getThreadContextClassLoader();
          try
          {
-            //SecurityActions.setThreadContextClassLoader(SecurityActions.getClassLoader(testClass));
-            SecurityActions.setThreadContextClassLoader(realCl);
+            DynamicServiceLoader.setClassLoaderAssociation(serviceClassLoader);
+            SecurityActions.setThreadContextClassLoader(SecurityActions.getClassLoader(testClass));
             TestResult testResult = runner.execute(testClass, methodName);
             return testResult;
          }
          finally
          {
-            SecurityActions.setThreadContextClassLoader(tccl);
+            SecurityActions.setThreadContextClassLoader(oldThreadContextCL);
+            DynamicServiceLoader.setClassLoaderAssociation(null);
          }
       }
       catch (Throwable th)
@@ -200,84 +196,5 @@ public class JMXTestRunner implements JMXTestRunnerMBean, ResourceCallbackHandle
       BlockingQueue<byte[]> resultBQ = results.get(commandId);
       if (resultBQ != null)
          resultBQ.offer(result);
-   }
-   
-   private static class Modules55ClassLoader extends ClassLoader 
-   {
-      private final ClassLoader testClassLoader; 
-      private final ClassLoader serviceClassLoader;
-
-      public Modules55ClassLoader(ClassLoader testClassLoader, ClassLoader serviceClassLoader)
-      {
-         this.testClassLoader = testClassLoader;
-         this.serviceClassLoader = serviceClassLoader;
-      }
-
-      @Override
-      public URL getResource(String name)
-      {
-         URL url = testClassLoader.getResource(name);
-         if (url != null) {
-            return url;
-         }
-         return serviceClassLoader.getResource(name);
-      }
-
-      @Override
-      public InputStream getResourceAsStream(String name)
-      {
-         InputStream in = testClassLoader.getResourceAsStream(name);
-         if (in != null) {
-            return in;
-         }
-         return serviceClassLoader.getResourceAsStream(name);
-      }
-
-      @Override
-      public Enumeration<URL> getResources(String name) throws IOException
-      {
-         final Enumeration<URL> test = testClassLoader.getResources(name);
-         final Enumeration<URL> service = serviceClassLoader.getResources(name);
-         if (!test.hasMoreElements()) {
-            return service;
-         }
-         if (!service.hasMoreElements()) {
-            return test;
-         }
-         
-         return new Enumeration<URL>()
-         {
-            Enumeration<URL> current = test;
-            
-            @Override
-            public boolean hasMoreElements()
-            {
-               if (current.hasMoreElements()) {
-                  return true;
-               }
-               if (current == test) {
-                  current = service;
-               }
-               return current.hasMoreElements();
-            }
-
-            @Override
-            public URL nextElement()
-            {
-               return current.nextElement();
-            }
-         };
-      }
-
-      @Override
-      public Class<?> loadClass(String name) throws ClassNotFoundException
-      {
-         try {
-            return testClassLoader.loadClass(name);
-         } catch (ClassNotFoundException e) {
-            //FIXME the serviceClassLoader classes need to be visible from the testClassLoader
-            return serviceClassLoader.loadClass(name);
-         }
-      }
    }
 }

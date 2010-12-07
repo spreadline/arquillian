@@ -35,6 +35,12 @@
       <artifactId>arquillian-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- [TODO] REmove dependency on impl -->
+    <dependency>
+      <groupId>org.jboss.arquillian</groupId>
+      <artifactId>arquillian-impl-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>

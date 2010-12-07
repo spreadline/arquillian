@@ -17,17 +17,19 @@
 package org.jboss.arquillian.spi.util;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import org.jboss.arquillian.spi.Context;
+import org.jboss.arquillian.spi.ServiceLoader;
 import org.jboss.arquillian.spi.TestEnricher;
 
 /**
  * TestEnrichers
- * 
+ *
  * Helper for enriching TestCase instances based on multiple TestEnrichers.
- * 
+ *
  * @deprecated When TestNG get support for Phases Listeners, this should be moved out as a EventHandler in the before phase. Remove ServiceLoader
- * 
+ *
  * @author <a href="mailto:aslak@conduct.no">Aslak Knutsen</a>
  * @version $Revision: $
  */
@@ -41,16 +43,16 @@ public class TestEnrichers
    /**
     * Enrich the method arguments of a method call.<br/>
     * The Object[] index will match the method parameterType[] index.
-    * 
+    *
     * @param method
     * @return the argument values
     */
    public static Object[] enrich(Context context, Method method)
    {
       Object[] values = new Object[method.getParameterTypes().length];
-      ServiceLoader<TestEnricher> serviceLoader = ServiceLoader
-            .load(TestEnricher.class);
-      for (TestEnricher enricher : serviceLoader)
+      ServiceLoader serviceLoader = context.getServiceLoader();
+      Collection<TestEnricher> enrichers = serviceLoader.all(TestEnricher.class);
+      for (TestEnricher enricher : enrichers)
       {
          mergeValues(values, enricher.resolve(context, method));
       }
@@ -65,7 +67,7 @@ public class TestEnrichers
       }
       if(values.length != resolvedValues.length)
       {
-         throw new IllegalStateException("TestEnricher resolved wrong argument count, expected " + 
+         throw new IllegalStateException("TestEnricher resolved wrong argument count, expected " +
                values.length + " returned " + resolvedValues.length);
       }
       for (int i = 0; i < resolvedValues.length; i++)
