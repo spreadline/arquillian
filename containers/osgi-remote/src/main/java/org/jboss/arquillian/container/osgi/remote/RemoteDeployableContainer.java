@@ -216,8 +216,8 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       }
    }
 
-   // Get the MBeanServerConnection through the JMXConnector
-   private MBeanServerConnection getMBeanServerConnection()
+   @Override
+   public MBeanServerConnection getMBeanServerConnection()
    {
       String urlString = System.getProperty("jmx.service.url", "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxrmi");
       try

@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 
 import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
@@ -131,8 +132,15 @@ public class EmbeddedDeployableContainer extends AbstractDeployableContainer
    @Override
    public ContainerMethodExecutor getContainerMethodExecutor()
    {
-      MBeanServer mbeanServer = MBeanServerLocator.findOrCreateMBeanServer();
+      MBeanServerConnection mbeanServer = getMBeanServerConnection();
       return new JMXMethodExecutor(mbeanServer, ExecutionType.EMBEDDED);
+   }
+
+   @Override
+   public MBeanServerConnection getMBeanServerConnection()
+   {
+      MBeanServer mbeanServer = MBeanServerLocator.findOrCreateMBeanServer();
+      return mbeanServer;
    }
 
    @Override

@@ -23,8 +23,11 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.MBeanServerConnection;
+
 import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
+import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.spi.Configuration;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
@@ -71,7 +74,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       // Install the arquillian bundle on demand
       try
       {
-         if (isBundleInstalled("arquillian-osgi-bundle") == false)
+         if (isJMXTestRunnerAvailable() == false)
          {
             BundleHandle handle = installSupportBundle("arquillian-osgi-bundle", true);
             supportBundles.add(handle);
@@ -84,6 +87,19 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       catch (Exception ex)
       {
          throw new IllegalStateException("Cannot install support bundles", ex);
+      }
+   }
+
+   private boolean isJMXTestRunnerAvailable()
+   {
+      try
+      {
+         MBeanServerConnection mbeanServer = getMBeanServerConnection();
+         return mbeanServer.isRegistered(JMXTestRunnerMBean.OBJECT_NAME);
+      }
+      catch (IOException e)
+      {
+         return false;
       }
    }
 
@@ -193,6 +209,8 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
    }
 
+   public abstract MBeanServerConnection getMBeanServerConnection();
+
    public abstract InternalArchiveProvider createInternalArchiveProvider(TestClass testClass, ArchiveProvider archiveProvider);
 
    public abstract ContainerMethodExecutor getContainerMethodExecutor();
@@ -251,7 +269,7 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       }
       return null;
    }
-   
+
    public static class BundleHandle
    {
       private long bundleId;
