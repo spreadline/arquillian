@@ -30,6 +30,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.impl.base.ArchiveBase;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -129,7 +130,7 @@ class OSGiContainerImpl implements OSGiContainer
       try
       {
          // Create the archive in the context of the arquillian-osgi-bundle
-         SecurityActions.setThreadContextClassLoader(OSGiContainerImpl.class.getClassLoader());
+         SecurityActions.setThreadContextClassLoader(ArchiveBase.class.getClassLoader());
          JavaArchive archive = ShrinkWrap.create(JavaArchive.class, name);
          ZipImporter zipImporter = archive.as(ZipImporter.class);
          zipImporter.importZip(new ZipInputStream(input));
