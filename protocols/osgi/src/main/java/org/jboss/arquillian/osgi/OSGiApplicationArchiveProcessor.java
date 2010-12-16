@@ -113,7 +113,6 @@ public class OSGiApplicationArchiveProcessor implements ApplicationArchiveProces
         // [TODO] use bnd or another tool to do this more intelligently
         builder.addImportPackages("org.jboss.arquillian.api", "org.jboss.arquillian.junit", "org.jboss.arquillian.osgi");
         builder.addImportPackages("org.jboss.shrinkwrap.api", "org.jboss.shrinkwrap.api.asset", "org.jboss.shrinkwrap.api.spec");
-        builder.addImportPackages("org.jboss.shrinkwrap.impl.base");
         builder.addImportPackages("org.junit", "org.junit.runner", "javax.inject", "org.osgi.framework");
         builder.addImportPackages("org.jboss.osgi.spi.util", "org.jboss.osgi.testing");
 

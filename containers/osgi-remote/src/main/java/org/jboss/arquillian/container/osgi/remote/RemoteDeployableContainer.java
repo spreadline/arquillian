@@ -30,17 +30,12 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.internal.AbstractDeployableContainer;
-import org.jboss.arquillian.osgi.internal.InternalArchiveProvider;
-import org.jboss.arquillian.osgi.internal.MBeanNotificationArchiveProvider;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor;
 import org.jboss.arquillian.protocol.jmx.JMXMethodExecutor.ExecutionType;
-import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.spi.ContainerMethodExecutor;
 import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.arquillian.spi.TestClass;
 import org.jboss.osgi.spi.util.BundleInfo;
 import org.jboss.osgi.testing.OSGiTestHelper;
 import org.jboss.osgi.testing.internal.ManagementSupport;
@@ -235,11 +230,5 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
       {
          throw new IllegalStateException("Cannot obtain MBeanServerConnection to: " + urlString, ex);
       }
-   }
-
-   @Override
-   public InternalArchiveProvider createInternalArchiveProvider(TestClass testClass, ArchiveProvider archiveProvider)
-   {
-      return new MBeanNotificationArchiveProvider(jmxSupport.getMBeanServer(), JMXTestRunnerMBean.OBJECT_NAME, archiveProvider);
    }
 }

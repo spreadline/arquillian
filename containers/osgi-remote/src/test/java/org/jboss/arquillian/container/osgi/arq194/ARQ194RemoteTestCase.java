@@ -22,9 +22,9 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import org.jboss.arquillian.api.ArchiveProvider;
 import org.jboss.arquillian.container.osgi.arq194.bundle.ARQ194RemoteActivator;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.OSGiContainer;
 import org.jboss.osgi.testing.OSGiManifestBuilder;
 import org.jboss.shrinkwrap.api.Archive;
@@ -69,26 +69,24 @@ public class ARQ194RemoteTestCase
       assertEquals("Bundle UNINSTALLED", Bundle.UNINSTALLED, bundle.getState());
    }
 
-   public static class BundleArchiveProvider implements ArchiveProvider
+   @ArchiveProvider
+   public static JavaArchive getTestArchive(String name)
    {
-      public JavaArchive getTestArchive(String name)
+      final JavaArchive archive = ShrinkWrap.create(JavaArchive.class, name);
+      archive.addClasses(ARQ194RemoteActivator.class, ARQ194RemoteService.class);
+      archive.setManifest(new Asset()
       {
-         final JavaArchive archive = ShrinkWrap.create(JavaArchive.class, name);
-         archive.addClasses(ARQ194RemoteActivator.class, ARQ194RemoteService.class);
-         archive.setManifest(new Asset()
+         public InputStream openStream()
          {
-            public InputStream openStream()
-            {
-               OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
-               builder.addBundleSymbolicName(archive.getName());
-               builder.addBundleManifestVersion(2);
-               builder.addBundleActivator(ARQ194RemoteActivator.class.getName());
-               builder.addExportPackages(ARQ194RemoteService.class);
-               builder.addImportPackages(BundleActivator.class);
-               return builder.openStream();
-            }
-         });
-         return archive;
-      }
+            OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
+            builder.addBundleSymbolicName(archive.getName());
+            builder.addBundleManifestVersion(2);
+            builder.addBundleActivator(ARQ194RemoteActivator.class.getName());
+            builder.addExportPackages(ARQ194RemoteService.class);
+            builder.addImportPackages(BundleActivator.class);
+            return builder.openStream();
+         }
+      });
+      return archive;
    }
 }

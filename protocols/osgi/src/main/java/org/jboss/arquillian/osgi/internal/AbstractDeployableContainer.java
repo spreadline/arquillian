@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import javax.management.MBeanServerConnection;
 
-import org.jboss.arquillian.osgi.ArchiveProvider;
 import org.jboss.arquillian.osgi.RepositoryArchiveLocator;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunnerMBean;
 import org.jboss.arquillian.spi.Configuration;
@@ -34,7 +33,6 @@ import org.jboss.arquillian.spi.Context;
 import org.jboss.arquillian.spi.DeployableContainer;
 import org.jboss.arquillian.spi.DeploymentException;
 import org.jboss.arquillian.spi.LifecycleException;
-import org.jboss.arquillian.spi.TestClass;
 import org.jboss.arquillian.spi.TestDeployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.osgi.framework.Bundle;
@@ -129,20 +127,11 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       // Resolve the application archive
       resolveInternal(context, appHandle);
 
-      InternalArchiveProvider archiveProvider = processArchiveProvider(context.get(TestClass.class));
-      if (archiveProvider != null)
-         context.add(InternalArchiveProvider.class, archiveProvider);
-
       return getContainerMethodExecutor();
    }
 
    public void undeploy(Context context, Archive<?> archive) throws DeploymentException
    {
-      // Unregister ArchiveProvider
-      InternalArchiveProvider archiveProvider = context.get(InternalArchiveProvider.class);
-      if (archiveProvider != null)
-         archiveProvider.destroy();
-
       BundleList bundleList = context.get(BundleList.class);
       uninstallBundleList(bundleList);
    }
@@ -211,8 +200,6 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
 
    public abstract MBeanServerConnection getMBeanServerConnection();
 
-   public abstract InternalArchiveProvider createInternalArchiveProvider(TestClass testClass, ArchiveProvider archiveProvider);
-
    public abstract ContainerMethodExecutor getContainerMethodExecutor();
 
    public abstract BundleHandle installBundle(Archive<?> archive) throws BundleException, IOException;
@@ -248,26 +235,6 @@ public abstract class AbstractDeployableContainer implements DeployableContainer
       if (startBundle == true)
          startBundle(handle);
       return handle;
-   }
-
-   private InternalArchiveProvider processArchiveProvider(TestClass testClass)
-   {
-      for (Class<?> innerClass : testClass.getJavaClass().getClasses())
-      {
-         if (ArchiveProvider.class.isAssignableFrom(innerClass))
-         {
-            try
-            {
-               ArchiveProvider archiveProvider = (ArchiveProvider)innerClass.newInstance();
-               return createInternalArchiveProvider(testClass, archiveProvider);
-            }
-            catch (Exception ex)
-            {
-               log.severe("Cannot register: " + innerClass.getName());
-            }
-         }
-      }
-      return null;
    }
 
    public static class BundleHandle
