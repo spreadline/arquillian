@@ -40,6 +40,7 @@ import org.jboss.osgi.spi.util.BundleInfo;
 import org.jboss.osgi.testing.OSGiTestHelper;
 import org.jboss.osgi.testing.internal.ManagementSupport;
 import org.jboss.osgi.vfs.AbstractVFS;
+import org.jboss.osgi.vfs.VFSUtils;
 import org.jboss.osgi.vfs.VirtualFile;
 import org.jboss.shrinkwrap.api.Archive;
 import org.osgi.framework.Bundle;
@@ -91,14 +92,28 @@ public class RemoteDeployableContainer extends AbstractDeployableContainer
    public BundleHandle installBundle(Archive<?> archive) throws BundleException, IOException
    {
       VirtualFile virtualFile = OSGiTestHelper.toVirtualFile(archive);
-      return installBundle(virtualFile);
+      try
+      {
+         return installBundle(virtualFile);
+      }
+      finally
+      {
+         VFSUtils.safeClose(virtualFile);
+      }
    }
 
    @Override
    public BundleHandle installBundle(URL bundleURL) throws BundleException, IOException
    {
       VirtualFile virtualFile = AbstractVFS.toVirtualFile(bundleURL);
-      return installBundle(virtualFile);
+      try
+      {
+         return installBundle(virtualFile);
+      }
+      finally
+      {
+         VFSUtils.safeClose(virtualFile);
+      }
    }
 
    private BundleHandle installBundle(VirtualFile virtualFile) throws BundleException, IOException

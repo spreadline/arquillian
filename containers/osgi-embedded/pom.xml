@@ -30,8 +30,8 @@
   <properties>
     <version.apache.aries.jmx>0.1-incubating</version.apache.aries.jmx>
     <version.apache.aries.util>0.1-incubating</version.apache.aries.util>
-    <version.jboss.osgi.framework>1.0.0.Alpha13</version.jboss.osgi.framework>
-    <version.jboss.osgi.resolver>1.0.4</version.jboss.osgi.resolver>
+    <version.jboss.osgi.framework>1.0.0.Alpha15</version.jboss.osgi.framework>
+    <version.jboss.osgi.resolver>1.0.5</version.jboss.osgi.resolver>
   </properties>
 
   <!-- Dependencies -->
